@@ -35,9 +35,9 @@ exec /usr/bin/env bash --rcfile "$@" "$0"
 
 # source the user's .bashrc file
 [ -r ~/.bashrc ] && {
-	pushd ~
+	pushd ~ > /dev/null
 	. .bashrc
-	popd
+	popd > /dev/null
 }
 
 
