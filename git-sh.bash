@@ -40,32 +40,90 @@ exec /usr/bin/env bash --rcfile "$@" "$0"
 	popd
 }
 
-# create aliases for most/all git command porcelains.
-for cmd in \
-	checkout add am annotate apply archive bisect blame branch bundle \
-	cat-file checkout cherry cherry-pick clean clone commit config describe \
-	diff fetch format-patch fsck gc gui init instaweb log lost-found \
-	ls-files ls-remote ls-tree merge mergetool mv patch-id peek-remote prune \
-	pull push quiltimport rebase remote repack repo-config request-pull \
-	reset rev-list rev-parse revert rm send-email send-pack show stash \
-	status stripspace submodule svn symbolic-ref tag tar-tree var \
-	whatchanged \
-; do
-	alias $cmd="git $cmd"
+
+# create aliases and configure bash completion for most porcelain commands
+
+_git_cmd_cfg=(
+	'add            alias'
+	'am             alias  stdcmpl'
+	'annotate       alias'
+	'apply          alias  stdcmpl'
+	'archive        alias'
+	'bisect         alias  stdcmpl'
+	'blame          alias'
+	'branch         alias  stdcmpl'
+	'bundle         alias  stdcmpl'
+	'cat-file       alias'
+	'checkout       alias  stdcmpl'
+	'cherry         alias  stdcmpl'
+	'cherry-pick    alias  stdcmpl'
+	'clean          alias'
+	'clone          alias'
+	'commit         alias  stdcmpl'
+	'config         alias  stdcmpl'
+	'describe       alias  stdcmpl'
+	'diff           alias  stdcmpl'
+	'fetch          alias  stdcmpl'
+	'format-patch   alias  stdcmpl'
+	'fsck           alias'
+	'gc             alias  stdcmpl'
+	'gui            alias'
+	'init           alias'
+	'instaweb       alias'
+	'log            alias  logcmpl'
+	'lost-found     alias'
+	'ls-files       alias'
+	'ls-remote      alias  stdcmpl'
+	'ls-tree        alias  stdcmpl'
+	'merge          alias  stdcmpl'
+	'merge-base            stdcmpl'
+	'mergetool      alias'
+	'mv             alias'
+	'name-rev              stdcmpl'
+	'patch-id       alias'
+	'peek-remote    alias'
+	'prune          alias'
+	'pull           alias  stdcmpl'
+	'push           alias  stdcmpl'
+	'quiltimport    alias'
+	'rebase         alias  stdcmpl'
+	'remote         alias  stdcmpl'
+	'repack         alias'
+	'repo-config    alias'
+	'request-pull   alias'
+	'reset          alias  stdcmpl'
+	'rev-list       alias'
+	'rev-parse      alias'
+	'revert         alias'
+	'rm             alias'
+	'send-email     alias'
+	'send-pack      alias'
+	'shortlog              stdcmpl'
+	'show           alias  stdcmpl'
+	'show-branch           logcmpl'
+	'stash          alias  stdcmpl'
+	'status         alias'
+	'stripspace     alias'
+	'submodule      alias  stdcmpl'
+	'svn            alias'
+	'symbolic-ref   alias'
+	'tag            alias  stdcmpl'
+	'tar-tree       alias'
+	'var            alias'
+	'whatchanged    alias  logcmpl'
+)
+
+for cfg in "${_git_cmd_cfg[@]}" ; do
+	read cmd opts <<< $cfg
+	for opt in $opts ; do
+		case $opt in
+			alias)   alias $cmd="git $cmd" ;;
+			stdcmpl) complete -o default -o nospace -F _git_${cmd//-/_} $cmd ;;
+			logcmpl) complete -o default -o nospace -F _git_log         $cmd ;;
+		esac
+	done
 done
 
-# configure bash completion for aliases
-for cmd in \
-	am apply bisect branch bundle checkout cherry cherry-pick commit \
-	describe diff fetch format-patch gc log ls-remote ls-tree merge \
-	merge-base name-rev pull push rebase config remote reset shortlog \
-	show stash submodule tag \
-; do
-	complete -o default -o nospace -F _git_${cmd//-/_} $cmd
-done
-for cmd in show-branch whatchanged ; do
-	complete -o default -o nospace -F _git_log $cmd
-done
 
 # setup the prompt
 
