@@ -126,9 +126,17 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 done
 
 
-# setup the prompt
+# PROMPT =======================================================================
 
-git_prompt_setup() {
+# grab colors from git's config.
+#
+# TODO we should probably add our own "color.sh.THING" values to the config and
+# a switch that let's you enable / disable colors entirely.
+COLOR_CLEAR="\[\033[0m\]"
+COLOR_BRANCH=$(git config --get-color color.branch.current)
+COLOR_WORKDIR=$(git config --get-color color.diff.meta)
+
+_git_prompt_setup() {
 	br=$(git symbolic-ref HEAD 2>/dev/null)
 	br=${br#refs/heads/}
 	rel=$(git rev-parse --show-prefix 2>/dev/null)
@@ -136,17 +144,17 @@ git_prompt_setup() {
 	loc="${PWD%/$rel}"
 }
 
-git_prompt_plain() {
-	git_prompt_setup
+_git_prompt_plain() {
+	_git_prompt_setup
 	PS1="git:$br!${loc/*\/}${rel:+/$rel}> "
 }
 
-git_prompt_color() {
-	git_prompt_setup
-	PS1="${BLACK}${ORANGE_BG}$br${PS_CLEAR}${GREY}!${PS_CLEAR}${LIGHT_BLUE}${loc/*\/}${rel:+/$rel}${PS_CLEAR}${GREY}>${PS_CLEAR} "
+_git_prompt_color() {
+	_git_prompt_setup
+	PS1="${COLOR_BRANCH}$br${COLOR_CLEAR}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_CLEAR}> "
 }
 
-PROMPT_COMMAND=git_prompt_color
+PROMPT_COMMAND=_git_prompt_color
 
 # try to provide a decent help command
 
@@ -162,3 +170,5 @@ help() {
 	local _git_pager=$(git config core.pager)
 	_help_display | ${_git_pager:-${PAGER:-less}}
 }
+
+# vim: tw=80
