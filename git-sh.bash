@@ -2,7 +2,8 @@
 #
 # A customized bash environment suitable for git work.
 #
-# Copyright (C) 2008 Ryan Tomayko <r@tomayko.com>
+# Copyright (C) 2008 Ryan Tomayko <http://tomayko.com/>
+# Copyright (C) 2008 Aristotle Pagaltzis <http://plasmasturm.org/>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
