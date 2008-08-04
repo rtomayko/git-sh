@@ -179,5 +179,6 @@ _help_display() {
 }
 
 help() {
-	_help_display | ${PAGER:-less}
+	local _git_pager=$(git config core.pager)
+	_help_display | ${_git_pager:-${PAGER:-less}}
 }
