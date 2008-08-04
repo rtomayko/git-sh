@@ -20,7 +20,7 @@
 # Distributed under the GNU General Public License, version 2.0.
 
 # use to install the sh alias
-[ "$1" = "--configure" ] && {
+[[ $1 = '--configure' && $# = 1 ]] && {
 	set -e
 	git config --global alias.sh '!git-sh'
 	echo "alias 'sh' added to ~/.gitconfig"
@@ -35,113 +35,37 @@ exec /usr/bin/env bash --rcfile "$@" "$0"
 
 # source the user's .bashrc file
 [ -r ~/.bashrc ] && {
-	cd ~
+	pushd ~
 	. .bashrc
-	cd $OLDPWD
+	popd
 }
 
 # create aliases for most/all git command porcelains.
-
-alias checkout='git checkout'
-alias add='git add'
-alias am='git am'
-alias annotate='git annotate'
-alias apply='git apply'
-alias archive='git archive'
-alias bisect='git bisect'
-alias blame='git blame'
-alias branch='git branch'
-alias bundle='git bundle'
-alias cat-file='git cat-file'
-alias checkout='git checkout'
-alias cherry='git cherry'
-alias cherry-pick='git cherry-pick'
-alias clean='git clean'
-alias clone='git clone'
-alias commit='git commit'
-alias config='git config'
-alias describe='git describe'
-alias diff='git diff'
-alias fetch='git fetch'
-alias format-patch='git format-patch'
-alias fsck='git fsck'
-alias gc='git gc'
-alias gui='git gui'
-alias init='git init'
-alias instaweb='git instaweb'
-alias log='git log'
-alias lost-found='git lost-found'
-alias ls-files='git ls-files'
-alias ls-remote='git ls-remote'
-alias ls-tree='git ls-tree'
-alias merge='git merge'
-alias mergetool='git mergetool'
-alias mv='git mv'
-alias patch-id='git patch-id'
-alias peek-remote='git peek-remote'
-alias prune='git prune'
-alias pull='git pull'
-alias push='git push'
-alias quiltimport='git quiltimport'
-alias rebase='git rebase'
-alias remote='git remote'
-alias repack='git repack'
-alias repo-config='git repo-config'
-alias request-pull='git request-pull'
-alias reset='git reset'
-alias rev-list='git rev-list'
-alias rev-parse='git rev-parse'
-alias revert='git revert'
-alias rm='git rm'
-alias send-email='git send-email'
-alias send-pack='git send-pack'
-alias show='git show'
-alias stash='git stash'
-alias status='git status'
-alias stripspace='git stripspace'
-alias submodule='git submodule'
-alias svn='git svn'
-alias symbolic-ref='git symbolic-ref'
-alias tag='git tag'
-alias tar-tree='git tar-tree'
-alias var='git var'
-alias whatchanged='git whatchanged'
+for cmd in \
+	checkout add am annotate apply archive bisect blame branch bundle \
+	cat-file checkout cherry cherry-pick clean clone commit config describe \
+	diff fetch format-patch fsck gc gui init instaweb log lost-found \
+	ls-files ls-remote ls-tree merge mergetool mv patch-id peek-remote prune \
+	pull push quiltimport rebase remote repack repo-config request-pull \
+	reset rev-list rev-parse revert rm send-email send-pack show stash \
+	status stripspace submodule svn symbolic-ref tag tar-tree var \
+	whatchanged \
+; do
+	alias $cmd="git $cmd"
+done
 
 # configure bash completion for aliases
-
-complete -o default -o nospace -F _git_am am
-complete -o default -o nospace -F _git_apply apply
-complete -o default -o nospace -F _git_bisect bisect
-complete -o default -o nospace -F _git_branch branch
-complete -o default -o nospace -F _git_bundle bundle
-complete -o default -o nospace -F _git_checkout checkout
-complete -o default -o nospace -F _git_cherry cherry
-complete -o default -o nospace -F _git_cherry_pick cherry-pick
-complete -o default -o nospace -F _git_commit commit
-complete -o default -o nospace -F _git_describe describe
-complete -o default -o nospace -F _git_diff diff
-complete -o default -o nospace -F _git_fetch fetch
-complete -o default -o nospace -F _git_format_patch format-patch
-complete -o default -o nospace -F _git_gc gc
-complete -o default -o nospace -F _git_log log
-complete -o default -o nospace -F _git_ls_remote ls-remote
-complete -o default -o nospace -F _git_ls_tree ls-tree
-complete -o default -o nospace -F _git_merge merge
-complete -o default -o nospace -F _git_merge_base merge-base
-complete -o default -o nospace -F _git_name_rev name-rev
-complete -o default -o nospace -F _git_pull pull
-complete -o default -o nospace -F _git_push push
-complete -o default -o nospace -F _git_rebase rebase
-complete -o default -o nospace -F _git_config config
-complete -o default -o nospace -F _git_remote remote
-complete -o default -o nospace -F _git_reset reset
-complete -o default -o nospace -F _git_shortlog shortlog
-complete -o default -o nospace -F _git_show show
-complete -o default -o nospace -F _git_stash stash
-complete -o default -o nospace -F _git_submodule submodule
-complete -o default -o nospace -F _git_log show-branch
-complete -o default -o nospace -F _git_tag tag
-complete -o default -o nospace -F _git_log whatchanged
+for cmd in \
+	am apply bisect branch bundle checkout cherry cherry-pick commit \
+	describe diff fetch format-patch gc log ls-remote ls-tree merge \
+	merge-base name-rev pull push rebase config remote reset shortlog \
+	show stash submodule tag \
+; do
+	complete -o default -o nospace -F _git_${cmd//-/_} $cmd
+done
+for cmd in show-branch whatchanged ; do
+	complete -o default -o nospace -F _git_log $cmd
+done
 
 # setup the prompt
 
@@ -170,11 +94,8 @@ PROMPT_COMMAND=git_prompt_color
 _help_display() {
 	git --help
 	test -r ~/.gitshrc && {
-		printf "\nAliases from ~/.gitshrc\n"
-		cat ~/.gitshrc |
-		/usr/bin/grep -F alias |
-		perl -pe "s/alias //" |
-		perl -pe "s/=/\t\t\t/"
+		echo ; echo 'Aliases from ~/.gitshrc'
+		perl -ne's/alias // or next; s/=/\t\t\t/; print' ~/.gitshrc
 	}
 }
 
