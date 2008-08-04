@@ -159,8 +159,13 @@ PROMPT_COMMAND=_git_prompt_color
 # try to provide a decent help command
 
 _help_display() {
-	git --help
-	test -r ~/.gitshrc && {
+	# show git's inbuilt help, after some tweaking...
+	git --help |
+		grep -v 'usage: git ' |
+		sed "s/See 'git help/See 'help/"
+
+	# show aliases from ~/.gitshrc
+	[ -r ~/.gitshrc ] && {
 		echo ; echo 'Aliases from ~/.gitshrc'
 		perl -ne's/alias // or next; s/=/\t\t\t/; print' ~/.gitshrc
 	}
@@ -168,7 +173,10 @@ _help_display() {
 
 help() {
 	local _git_pager=$(git config core.pager)
-	_help_display | ${_git_pager:-${PAGER:-less}}
+	[ $# = 1 ] &&
+		git help $1 ||
+		(_help_display | ${_git_pager:-${PAGER:-less}})
 }
+complete -o default -o nospace -F _git help
 
 # vim: tw=80
