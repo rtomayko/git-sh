@@ -132,9 +132,9 @@ done
 #
 # TODO we should probably add our own "color.sh.THING" values to the config and
 # a switch that let's you enable / disable colors entirely.
-COLOR_CLEAR="\[\033[0m\]"
-COLOR_BRANCH=$(git config --get-color color.branch.current)
-COLOR_WORKDIR=$(git config --get-color color.diff.meta)
+COLOR_RESET="\[\033[0;39;49m\]"
+COLOR_BRANCH='\[$(git config --get-color color.branch.current)\]'
+COLOR_WORKDIR='\[$(git config --get-color color.diff.meta)\]'
 
 _git_prompt_setup() {
 	br=$(git symbolic-ref HEAD 2>/dev/null)
@@ -151,7 +151,7 @@ _git_prompt_plain() {
 
 _git_prompt_color() {
 	_git_prompt_setup
-	PS1="${COLOR_BRANCH}$br${COLOR_CLEAR}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_CLEAR}> "
+	PS1="${COLOR_BRANCH}${br}${COLOR_RESET}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_RESET}> "
 }
 
 PROMPT_COMMAND=_git_prompt_color
