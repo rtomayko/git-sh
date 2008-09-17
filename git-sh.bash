@@ -137,8 +137,12 @@ COLOR_BRANCH='\[$(git config --get-color color.branch.current)\]'
 COLOR_WORKDIR='\[$(git config --get-color color.diff.meta)\]'
 
 _git_prompt_setup() {
-	br=$(git symbolic-ref HEAD 2>/dev/null)
-	br=${br#refs/heads/}
+	br=$(git symbolic-ref -q HEAD 2>/dev/null)
+	if [ -n "$br" ] ; then
+		br=${br#refs/heads/}
+	else
+		br=$(git rev-parse --short HEAD 2>/dev/null)
+	fi
 	rel=$(git rev-parse --show-prefix 2>/dev/null)
 	rel="${rel%/}"
 	loc="${PWD%/$rel}"
