@@ -3,14 +3,14 @@ git-sh
 
 A customized bash shell suitable for git work.
 
-The `git-sh` command starts an interactive shell tweaked for heavy git
+The `git-sh` command starts an interactive bash shell tweaked for heavy git
 interaction:
 
   * Makes all git command porcelains available as top-level command aliases.
-  * Custom prompt with branch and current repository
+  * Custom prompt with branch and current repository.
+  * Shawn O. Pearce's bash completion support built-in.
   * Customizable via ~/.gitshrc file (add aliases, change prompt, etc.)
-  * Shawn O. Pearce's bash completion support built-in and works with
-    aliases.
+  * `gitalias` command for defining shorthand git aliases with completion.
   * Respects `~/.bashrc` and `~/.inputrc` configuration.
 
 Installation
@@ -42,8 +42,9 @@ I typically change into a git working copy before starting the shell:
     $ git sh
     master!some-git-repo>
 
-The shell's default prompt shows the current branch, bang, and the relative
-path to the current working directory from the nearest git working copy.
+The shell's default prompt shows the current branch, a bang, and the
+relative path to the current working directory from the nearest git working
+copy.
 
 Most git commands can be executed directly:
 
@@ -63,9 +64,9 @@ shell does before becoming interactive. I've included my personal
 
 [1]: gitshrc-example.bash "Ryan's ~/.gitshrc file"
 
-Note also that your `~/.bashrc` file is sourced into the shell as well so
-any customization made there not explicitly overridden by `git-sh` should
-be available.
+Note also that your `~/.bashrc` file is sourced into the shell before
+`~/.gitshrc` so any base customizations not explicitly overridden by
+`git-sh` should be available.
 
 Help
 ----
@@ -78,8 +79,9 @@ aliases from your `~/.gitshrc` file:
 License
 -------
 
-Copyright (C) 2008 Ryan Tomayko <r@tomayko.com>
-Copyright (C) 2006, 2007 Shawn O. Pearce <spearce@spearce.org>
+Copyright (C) 2008 [Ryan Tomayko](http://tomayko.com/)  
+Copyright (C) 2008 [Aristotle Pagaltzis](http://plasmasturm.org/)  
+Copyright (C) 2006, 2007 [Shawn O. Pearce](mailto:spearce@spearce.org)
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License, version 2, as published

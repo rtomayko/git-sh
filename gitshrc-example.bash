@@ -1,57 +1,42 @@
-# (@) ~rtomayko/.gitshrc
+#!/bin/bash
+# Example ~/.gitshrc file.
 
-alias commit='git commit -v'
-alias ci='git commit -v'
-alias ca='git commit -a'
-alias  n='git commit -v --amend'
-complete -o default -o nospace -F _git_commit ci
-complete -o default -o nospace -F _git_commit ca
-complete -o default -o nospace -F _git_commit n
+# git commit
+gitalias commit='git commit --verbose'
+gitalias amend='git commit --verbose --amend'
+gitalias ci='git commit --verbose'
+gitalias ca='git commit --verbose --all'
+gitalias  n='git commit --verbose --amend'
 
-alias  a='git add'
-alias aa='git add -u'
-complete -o default -o nospace -F _git_add a
-complete -o default -o nospace -F _git_add aa
+# git add
+gitalias  a='git add'
+gitalias aa='git add --update'
+gitalias ap='git add --patch'
 
-alias  c='git checkout'
-complete -o default -o nospace -F _git_checkout c
+# git checkout
+gitalias c='git checkout'
 
-alias  f='git fetch'
-complete -o default -o nospace -F _git_fetch f
+# git fetch
+gitalias f='git fetch'
 
-alias  r='git rebase -i HEAD~10'
+# git rebase
+gitalias r='git rebase --interactive HEAD~10'
 
-alias  d='git diff'
-alias  p='git diff --cached'
-complete -o default -o nospace -F _git_diff d
-complete -o default -o nospace -F _git_diff p
+# git diff
+gitalias d='git diff'
+gitalias p='git diff --cached'   # mnemonic: "patch"
 
-
+# git status
 alias  s='git status'
-complete -o default -o nospace -F _git_status s
 
-alias L='git log'
-alias l='git log --pretty=oneline --abbrev-commit'
-alias l1='l -n1'
-alias l2='l -n2'
-alias l5='l -n5'
-alias l10='l -n10'
-alias ll='l -n10'
+# git log
+gitalias  L='git log'
+gitalias  l='git log --pretty=oneline --abbrev-commit'
+gitalias ll='git log --pretty=oneline --abbrev-commit --max-count=15'
 
-complete -o default -o nospace -F _git_log L
-complete -o default -o nospace -F _git_log l
-complete -o default -o nospace -F _git_log l1
-complete -o default -o nospace -F _git_log l2
-complete -o default -o nospace -F _git_log l5
-complete -o default -o nospace -F _git_log l10
-complete -o default -o nospace -F _git_log ll
-
-alias mirror='git reset --hard'
-alias unstage='git reset HEAD'
-complete -o default -o nospace -F _git_reset mirror
-complete -o default -o nospace -F _git_reset unstage
-
-alias stage='git add'
-alias queue='git add'
-alias amend='git commit -v --amend'
-alias pop='git reset --soft HEAD^'
+# experimental
+gitalias mirror='git reset --hard'
+gitalias stage='git add'
+gitalias unstage='git reset HEAD'
+gitalias pop='git reset --soft HEAD^'
+gitalias review='git log -p --max-count=1'

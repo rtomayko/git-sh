@@ -42,6 +42,39 @@ exec /usr/bin/env bash --rcfile "$@" "$0"
 }
 
 
+# ALIASES + COMPLETION =========================================================
+
+# gitcomp <alias> <command>
+#
+# Complete command named <alias> like standard git command named
+# <command>. <command> must be a valid git command with completion.
+#
+# Examples:
+#   gitcomplete ci commit
+#   gitcomplete c  checkout
+gitcomplete() {
+	local alias="$1" command="$2"
+	complete -o default -o nospace -F _git_${command//-/_} $alias
+}
+
+# gitalias <alias>='<command> [<args>...]'
+#
+# Define a new shell alias (as with the alias builtin) named <alias>
+# and enable command completion based on <command>. <command> must be
+# a standard non-abbreviated git command name that has completion support.
+#
+# Examples:
+#   gitalias c=checkout
+#   gitalias ci='commit -v'
+#   gitalias r='rebase --interactive HEAD~10'
+gitalias() {
+	local alias="${1%%=*}" command="${1#*=}"
+	local prog="${command##git }"
+	prog="${prog%% *}"
+	alias $alias="$command"
+	gitcomplete "$alias" "$prog"
+}
+
 # create aliases and configure bash completion for most porcelain commands
 
 _git_cmd_cfg=(
@@ -125,7 +158,6 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	done
 done
 
-
 # PROMPT =======================================================================
 
 # grab colors from git's config.
@@ -171,7 +203,7 @@ _help_display() {
 	# show aliases from ~/.gitshrc
 	[ -r ~/.gitshrc ] && {
 		echo ; echo 'Aliases from ~/.gitshrc'
-		perl -ne's/alias // or next; s/=/\t\t\t/; print' ~/.gitshrc
+		perl -ne's/(?:git)?alias +// or next; s/=/\t\t\t/; print' ~/.gitshrc
 	}
 }
 
