@@ -606,7 +606,7 @@ _git_fetch ()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	case "${COMP_WORDS[0]},$COMP_CWORD" in
-	git-fetch*,1)
+	*,1)
 		__gitcomp "$(__git_remotes)"
 		;;
 	git,2)
@@ -620,8 +620,8 @@ _git_fetch ()
 		*)
 			local remote
 			case "${COMP_WORDS[0]}" in
-			git-fetch) remote="${COMP_WORDS[1]}" ;;
 			git)       remote="${COMP_WORDS[2]}" ;;
+			*)         remote="${COMP_WORDS[1]}" ;;
 			esac
 			__gitcomp "$(__git_refs2 "$remote")"
 			;;
@@ -747,7 +747,7 @@ _git_pull ()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	case "${COMP_WORDS[0]},$COMP_CWORD" in
-	git-pull*,1)
+	*,1)
 		__gitcomp "$(__git_remotes)"
 		;;
 	git,2)
@@ -756,8 +756,8 @@ _git_pull ()
 	*)
 		local remote
 		case "${COMP_WORDS[0]}" in
-		git-pull)  remote="${COMP_WORDS[1]}" ;;
 		git)       remote="${COMP_WORDS[2]}" ;;
+		*)         remote="${COMP_WORDS[1]}" ;;
 		esac
 		__gitcomp "$(__git_refs "$remote")"
 		;;
@@ -769,7 +769,7 @@ _git_push ()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	case "${COMP_WORDS[0]},$COMP_CWORD" in
-	git-push*,1)
+	*,1)
 		__gitcomp "$(__git_remotes)"
 		;;
 	git,2)
@@ -780,8 +780,8 @@ _git_push ()
 		*:*)
 			local remote
 			case "${COMP_WORDS[0]}" in
-			git-push)  remote="${COMP_WORDS[1]}" ;;
 			git)       remote="${COMP_WORDS[2]}" ;;
+			*)         remote="${COMP_WORDS[1]}" ;;
 			esac
 			__gitcomp "$(__git_refs "$remote")" "" "${cur#*:}"
 			;;
