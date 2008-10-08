@@ -160,13 +160,7 @@ done
 
 # PROMPT =======================================================================
 
-# grab colors from git's config.
-#
-# TODO we should probably add our own "color.sh.THING" values to the config and
-# a switch that let's you enable / disable colors entirely.
 COLOR_RESET="\[\033[0;39;49m\]"
-COLOR_BRANCH='\[$(git config --get-color color.branch.current)\]'
-COLOR_WORKDIR='\[$(git config --get-color color.diff.meta)\]'
 
 _git_prompt_setup() {
 	br=$(git symbolic-ref -q HEAD 2>/dev/null)
@@ -180,6 +174,20 @@ _git_prompt_setup() {
 	loc="${PWD%/$rel}"
 }
 
+# read the color.sh git config value to determine which variation of prompt
+# command to use.
+_git_prompt_detect() {
+	if git config --get-colorbool color.sh 2>/dev/null ;
+	then
+		# TODO add "color.sh.THING" config values
+		COLOR_BRANCH='\[$(git config --get-color color.branch.current 2>/dev/null)\]'
+		COLOR_WORKDIR='\[$(git config --get-color color.diff.meta 2>/dev/null)\]'
+		_git_prompt_color
+	else
+		_git_prompt_plain
+	fi
+}
+
 _git_prompt_plain() {
 	_git_prompt_setup
 	PS1="git:$br!${loc/*\/}${rel:+/$rel}> "
@@ -190,7 +198,7 @@ _git_prompt_color() {
 	PS1="${COLOR_BRANCH}${br}${COLOR_RESET}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_RESET}> "
 }
 
-PROMPT_COMMAND=_git_prompt_color
+PROMPT_COMMAND=_git_prompt_detect
 
 # try to provide a decent help command
 
