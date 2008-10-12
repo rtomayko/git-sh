@@ -63,7 +63,8 @@ Most git commands can be executed directly:
     new-branch!some-git-repo> rebase -i HEAD~10
 
 IMPORTANT: `rm`, `mv`, and `diff` are aliased to their git counterparts.
-Qualify the command (e.g., `/bin/rm`) to use system versions.
+Use the `command` command (eg. `command rm`) or qualify the command
+(e.g. `/bin/rm`) to use system versions.
 
 Customizing
 -----------
