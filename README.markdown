@@ -9,7 +9,8 @@ interaction:
   * Makes all git command porcelains available as top-level command aliases.
   * Custom prompt with branch and current repository.
   * Shawn O. Pearce's bash completion support built-in.
-  * Customizable via ~/.gitshrc file (add aliases, change prompt, etc.)
+  * Customizable via `/etc/gitshrc` and `~/.gitshrc` config files (add
+    aliases, change prompt, etc.)
   * `gitalias` command for defining shorthand git aliases with completion.
   * Respects `~/.bashrc` and `~/.inputrc` configuration.
 
@@ -69,15 +70,15 @@ Use the `command` command (eg. `command rm`) or qualify the command
 Customizing
 -----------
 
-If the `~/.gitshrc` file exists, it is sourced as the very last thing the
-shell does before becoming interactive. I've included my personal
-[`~/.gitshrc`][1] in the distribution as an example.
+The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
+immediately before the shell becomes interactive.  An [example `gitshrc`
+file][1] is include in the distribution as an example.
 
 [1]: gitshrc-example.bash "Ryan's ~/.gitshrc file"
 
-Note also that your `~/.bashrc` file is sourced into the shell before
-`~/.gitshrc` so any base customizations not explicitly overridden by
-`git-sh` should be available.
+Note also that your `~/.bashrc` file is sourced into the shell before either
+`/etc/gitshrc` or `~/.gitshrc`, so any base bash customizations not
+explicitly overridden by `git-sh` should be available.
 
 Help
 ----
