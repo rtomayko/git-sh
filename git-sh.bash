@@ -139,7 +139,7 @@ _git_cmd_cfg=(
 	'status         alias'
 	'stripspace     alias'
 	'submodule      alias  stdcmpl'
-	'svn            alias'
+	'svn            alias  stdcmpl'
 	'symbolic-ref   alias'
 	'tag            alias  stdcmpl'
 	'tar-tree       alias'

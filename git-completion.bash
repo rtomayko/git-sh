@@ -70,28 +70,39 @@ __git_ps1 ()
 		local b
 		if [ -d "$g/../.dotest" ]
 		then
-			r="|AM/REBASE"
+			if test -f "$g/../.dotest/rebasing"
+			then
+				r="|REBASE"
+			elif test -f "$g/../.dotest/applying"
+			then
+				r="|AM"
+			else
+				r="|AM/REBASE"
+			fi
 			b="$(git symbolic-ref HEAD 2>/dev/null)"
 		elif [ -f "$g/.dotest-merge/interactive" ]
 		then
 			r="|REBASE-i"
-			b="$(cat $g/.dotest-merge/head-name)"
+			b="$(cat "$g/.dotest-merge/head-name")"
 		elif [ -d "$g/.dotest-merge" ]
 		then
 			r="|REBASE-m"
-			b="$(cat $g/.dotest-merge/head-name)"
+			b="$(cat "$g/.dotest-merge/head-name")"
 		elif [ -f "$g/MERGE_HEAD" ]
 		then
 			r="|MERGING"
 			b="$(git symbolic-ref HEAD 2>/dev/null)"
 		else
-			if [ -f $g/BISECT_LOG ]
+			if [ -f "$g/BISECT_LOG" ]
 			then
 				r="|BISECTING"
 			fi
 			if ! b="$(git symbolic-ref HEAD 2>/dev/null)"
 			then
-				b="$(cut -c1-7 $g/HEAD)..."
+				if ! b="$(git describe --exact-match HEAD 2>/dev/null)"
+				then
+					b="$(cut -c1-7 "$g/HEAD")..."
+				fi
 			fi
 		fi
 
@@ -110,13 +121,21 @@ __gitcomp ()
 	if [ $# -gt 2 ]; then
 		cur="$3"
 	fi
-	for c in $1; do
-		case "$c$4" in
-		--*=*) all="$all$c$4$s" ;;
-		*.)    all="$all$c$4$s" ;;
-		*)     all="$all$c$4 $s" ;;
-		esac
-	done
+	case "$cur" in
+	--*=)
+		COMPREPLY=()
+		return
+		;;
+	*)
+		for c in $1; do
+			case "$c$4" in
+			--*=*) all="$all$c$4$s" ;;
+			*.)    all="$all$c$4$s" ;;
+			*)     all="$all$c$4 $s" ;;
+			esac
+		done
+		;;
+	esac
 	IFS=$s
 	COMPREPLY=($(compgen -P "$2" -W "$all" -- "$cur"))
 	return
@@ -133,7 +152,7 @@ __git_heads ()
 		done
 		return
 	fi
-	for i in $(git-ls-remote "$1" 2>/dev/null); do
+	for i in $(git ls-remote "$1" 2>/dev/null); do
 		case "$is_hash,$i" in
 		y,*) is_hash=n ;;
 		n,*^{}) is_hash=y ;;
@@ -154,7 +173,7 @@ __git_tags ()
 		done
 		return
 	fi
-	for i in $(git-ls-remote "$1" 2>/dev/null); do
+	for i in $(git ls-remote "$1" 2>/dev/null); do
 		case "$is_hash,$i" in
 		y,*) is_hash=n ;;
 		n,*^{}) is_hash=y ;;
@@ -181,7 +200,7 @@ __git_refs ()
 		done
 		return
 	fi
-	for i in $(git-ls-remote "$dir" 2>/dev/null); do
+	for i in $(git ls-remote "$dir" 2>/dev/null); do
 		case "$is_hash,$i" in
 		y,*) is_hash=n ;;
 		n,*^{}) is_hash=y ;;
@@ -204,7 +223,7 @@ __git_refs2 ()
 __git_refs_remotes ()
 {
 	local cmd i is_hash=y
-	for i in $(git-ls-remote "$1" 2>/dev/null); do
+	for i in $(git ls-remote "$1" 2>/dev/null); do
 		case "$is_hash,$i" in
 		n,refs/heads/*)
 			is_hash=y
@@ -373,7 +392,6 @@ __git_commands ()
 		show-index)       : plumbing;;
 		ssh-*)            : transport;;
 		stripspace)       : plumbing;;
-		svn)              : import export;;
 		symbolic-ref)     : plumbing;;
 		tar-tree)         : deprecated;;
 		unpack-file)      : plumbing;;
@@ -415,6 +433,34 @@ __git_aliased_command ()
 			return
 		fi
 	done
+}
+
+__git_find_subcommand ()
+{
+	local word subcommand c=1
+
+	while [ $c -lt $COMP_CWORD ]; do
+		word="${COMP_WORDS[c]}"
+		for subcommand in $1; do
+			if [ "$subcommand" = "$word" ]; then
+				echo "$subcommand"
+				return
+			fi
+		done
+		c=$((++c))
+	done
+}
+
+__git_has_doubledash ()
+{
+	local c=1
+	while [ $c -lt $COMP_CWORD ]; do
+		if [ "--" = "${COMP_WORDS[c]}" ]; then
+			return 0
+		fi
+		c=$((++c))
+	done
+	return 1
 }
 
 __git_whitespacelist="nowarn warn error error-all strip"
@@ -463,10 +509,15 @@ _git_apply ()
 
 _git_add ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	case "$cur" in
 	--*)
-		__gitcomp "--interactive --refresh"
+		__gitcomp "
+			--interactive --refresh --patch --update --dry-run
+			--ignore-errors
+			"
 		return
 	esac
 	COMPREPLY=()
@@ -474,24 +525,16 @@ _git_add ()
 
 _git_bisect ()
 {
-	local i c=1 command
-	while [ $c -lt $COMP_CWORD ]; do
-		i="${COMP_WORDS[c]}"
-		case "$i" in
-		start|bad|good|reset|visualize|replay|log)
-			command="$i"
-			break
-			;;
-		esac
-		c=$((++c))
-	done
+	__git_has_doubledash && return
 
-	if [ $c -eq $COMP_CWORD -a -z "$command" ]; then
-		__gitcomp "start bad good reset visualize replay log"
+	local subcommands="start bad good reset visualize replay log"
+	local subcommand="$(__git_find_subcommand "$subcommands")"
+	if [ -z "$subcommand" ]; then
+		__gitcomp "$subcommands"
 		return
 	fi
 
-	case "$command" in
+	case "$subcommand" in
 	bad|good|reset)
 		__gitcomp "$(__git_refs)"
 		;;
@@ -503,7 +546,33 @@ _git_bisect ()
 
 _git_branch ()
 {
-	__gitcomp "$(__git_refs)"
+	local i c=1 only_local_ref="n" has_r="n"
+
+	while [ $c -lt $COMP_CWORD ]; do
+		i="${COMP_WORDS[c]}"
+		case "$i" in
+		-d|-m)	only_local_ref="y" ;;
+		-r)	has_r="y" ;;
+		esac
+		c=$((++c))
+	done
+
+	case "${COMP_WORDS[COMP_CWORD]}" in
+	--*=*)	COMPREPLY=() ;;
+	--*)
+		__gitcomp "
+			--color --no-color --verbose --abbrev= --no-abbrev
+			--track --no-track
+			"
+		;;
+	*)
+		if [ $only_local_ref = "y" -a $has_r = "n" ]; then
+			__gitcomp "$(__git_heads)"
+		else
+			__gitcomp "$(__git_refs)"
+		fi
+		;;
+	esac
 }
 
 _git_bundle ()
@@ -560,6 +629,8 @@ _git_cherry_pick ()
 
 _git_commit ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	case "$cur" in
 	--*)
@@ -579,6 +650,8 @@ _git_describe ()
 
 _git_diff ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	case "$cur" in
 	--*)
@@ -589,7 +662,10 @@ _git_diff ()
 			--find-copies-harder --pickaxe-all --pickaxe-regex
 			--text --ignore-space-at-eol --ignore-space-change
 			--ignore-all-space --exit-code --quiet --ext-diff
-			--no-ext-diff"
+			--no-ext-diff
+			--no-prefix --src-prefix= --dst-prefix=
+			--base --ours --theirs
+			"
 		return
 		;;
 	esac
@@ -606,7 +682,7 @@ _git_fetch ()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	case "${COMP_WORDS[0]},$COMP_CWORD" in
-	*,1)
+	git-fetch*,1)
 		__gitcomp "$(__git_remotes)"
 		;;
 	git,2)
@@ -620,8 +696,8 @@ _git_fetch ()
 		*)
 			local remote
 			case "${COMP_WORDS[0]}" in
+			git-fetch) remote="${COMP_WORDS[1]}" ;;
 			git)       remote="${COMP_WORDS[2]}" ;;
-			*)         remote="${COMP_WORDS[1]}" ;;
 			esac
 			__gitcomp "$(__git_refs2 "$remote")"
 			;;
@@ -645,6 +721,8 @@ _git_format_patch ()
 			--in-reply-to=
 			--full-index --binary
 			--not --all
+			--cover-letter
+			--no-prefix --src-prefix= --dst-prefix=
 			"
 		return
 		;;
@@ -676,6 +754,8 @@ _git_ls_tree ()
 
 _git_log ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	case "$cur" in
 	--pretty=*)
@@ -703,6 +783,7 @@ _git_log ()
 			--pretty= --name-status --name-only --raw
 			--not --all
 			--left-right --cherry-pick
+			--graph
 			"
 		return
 		;;
@@ -725,7 +806,7 @@ _git_merge ()
 		;;
 	--*)
 		__gitcomp "
-			--no-commit --no-summary --squash --strategy
+			--no-commit --no-stat --log --no-log --squash --strategy
 			"
 		return
 	esac
@@ -747,7 +828,7 @@ _git_pull ()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	case "${COMP_WORDS[0]},$COMP_CWORD" in
-	*,1)
+	git-pull*,1)
 		__gitcomp "$(__git_remotes)"
 		;;
 	git,2)
@@ -756,8 +837,8 @@ _git_pull ()
 	*)
 		local remote
 		case "${COMP_WORDS[0]}" in
+		git-pull)  remote="${COMP_WORDS[1]}" ;;
 		git)       remote="${COMP_WORDS[2]}" ;;
-		*)         remote="${COMP_WORDS[1]}" ;;
 		esac
 		__gitcomp "$(__git_refs "$remote")"
 		;;
@@ -769,7 +850,7 @@ _git_push ()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	case "${COMP_WORDS[0]},$COMP_CWORD" in
-	*,1)
+	git-push*,1)
 		__gitcomp "$(__git_remotes)"
 		;;
 	git,2)
@@ -780,8 +861,8 @@ _git_push ()
 		*:*)
 			local remote
 			case "${COMP_WORDS[0]}" in
+			git-push)  remote="${COMP_WORDS[1]}" ;;
 			git)       remote="${COMP_WORDS[2]}" ;;
-			*)         remote="${COMP_WORDS[1]}" ;;
 			esac
 			__gitcomp "$(__git_refs "$remote")" "" "${cur#*:}"
 			;;
@@ -798,8 +879,8 @@ _git_push ()
 
 _git_rebase ()
 {
-	local cur="${COMP_WORDS[COMP_CWORD]}"
-	if [ -d .dotest ] || [ -d .git/.dotest-merge ]; then
+	local cur="${COMP_WORDS[COMP_CWORD]}" dir="$(__gitdir)"
+	if [ -d .dotest ] || [ -d "$dir"/.dotest-merge ]; then
 		__gitcomp "--continue --skip --abort"
 		return
 	fi
@@ -814,7 +895,7 @@ _git_rebase ()
 		return
 		;;
 	--*)
-		__gitcomp "--interactive --onto --merge --strategy"
+		__gitcomp "--onto --merge --strategy --interactive"
 		return
 	esac
 	__gitcomp "$(__git_refs)"
@@ -918,7 +999,6 @@ _git_config ()
 		core.sharedRepository
 		core.warnAmbiguousRefs
 		core.compression
-		core.legacyHeaders
 		core.packedGitWindowSize
 		core.packedGitLimit
 		clean.requireForce
@@ -949,7 +1029,8 @@ _git_config ()
 		gitcvs.enabled
 		gitcvs.logfile
 		gitcvs.allbinary
-		gitcvs.dbname gitcvs.dbdriver gitcvs.dbuser gitcvs.dvpass
+		gitcvs.dbname gitcvs.dbdriver gitcvs.dbuser gitcvs.dbpass
+		gitcvs.dbtablenameprefix
 		gc.packrefs
 		gc.reflogexpire
 		gc.reflogexpireunreachable
@@ -995,21 +1076,14 @@ _git_config ()
 
 _git_remote ()
 {
-	local i c=1 command
-	while [ $c -lt $COMP_CWORD ]; do
-		i="${COMP_WORDS[c]}"
-		case "$i" in
-		add|rm|show|prune|update) command="$i"; break ;;
-		esac
-		c=$((++c))
-	done
-
-	if [ $c -eq $COMP_CWORD -a -z "$command" ]; then
-		__gitcomp "add rm show prune update"
+	local subcommands="add rm show prune update"
+	local subcommand="$(__git_find_subcommand "$subcommands")"
+	if [ -z "$subcommand" ]; then
+		__gitcomp "$subcommands"
 		return
 	fi
 
-	case "$command" in
+	case "$subcommand" in
 	rm|show|prune)
 		__gitcomp "$(__git_remotes)"
 		;;
@@ -1033,6 +1107,8 @@ _git_remote ()
 
 _git_reset ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	case "$cur" in
 	--*)
@@ -1045,6 +1121,8 @@ _git_reset ()
 
 _git_shortlog ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	case "$cur" in
 	--*)
@@ -1083,31 +1161,106 @@ _git_show ()
 
 _git_stash ()
 {
-	__gitcomp 'list show apply clear'
+	local subcommands='save list show apply clear drop pop create'
+	if [ -z "$(__git_find_subcommand "$subcommands")" ]; then
+		__gitcomp "$subcommands"
+	fi
 }
 
 _git_submodule ()
 {
-	local i c=1 command
-	while [ $c -lt $COMP_CWORD ]; do
-		i="${COMP_WORDS[c]}"
-		case "$i" in
-		add|status|init|update) command="$i"; break ;;
-		esac
-		c=$((++c))
-	done
+	__git_has_doubledash && return
 
-	if [ $c -eq $COMP_CWORD -a -z "$command" ]; then
+	local subcommands="add status init update"
+	if [ -z "$(__git_find_subcommand "$subcommands")" ]; then
 		local cur="${COMP_WORDS[COMP_CWORD]}"
 		case "$cur" in
 		--*)
 			__gitcomp "--quiet --cached"
 			;;
 		*)
-			__gitcomp "add status init update"
+			__gitcomp "$subcommands"
 			;;
 		esac
 		return
+	fi
+}
+
+_git_svn ()
+{
+	local subcommands="
+		init fetch clone rebase dcommit log find-rev
+		set-tree commit-diff info create-ignore propget
+		proplist show-ignore show-externals
+		"
+	local subcommand="$(__git_find_subcommand "$subcommands")"
+	if [ -z "$subcommand" ]; then
+		__gitcomp "$subcommands"
+	else
+		local remote_opts="--username= --config-dir= --no-auth-cache"
+		local fc_opts="
+			--follow-parent --authors-file= --repack=
+			--no-metadata --use-svm-props --use-svnsync-props
+			--log-window-size= --no-checkout --quiet
+			--repack-flags --user-log-author $remote_opts
+			"
+		local init_opts="
+			--template= --shared= --trunk= --tags=
+			--branches= --stdlayout --minimize-url
+			--no-metadata --use-svm-props --use-svnsync-props
+			--rewrite-root= $remote_opts
+			"
+		local cmt_opts="
+			--edit --rmdir --find-copies-harder --copy-similarity=
+			"
+
+		local cur="${COMP_WORDS[COMP_CWORD]}"
+		case "$subcommand,$cur" in
+		fetch,--*)
+			__gitcomp "--revision= --fetch-all $fc_opts"
+			;;
+		clone,--*)
+			__gitcomp "--revision= $fc_opts $init_opts"
+			;;
+		init,--*)
+			__gitcomp "$init_opts"
+			;;
+		dcommit,--*)
+			__gitcomp "
+				--merge --strategy= --verbose --dry-run
+				--fetch-all --no-rebase $cmt_opts $fc_opts
+				"
+			;;
+		set-tree,--*)
+			__gitcomp "--stdin $cmt_opts $fc_opts"
+			;;
+		create-ignore,--*|propget,--*|proplist,--*|show-ignore,--*|\
+		show-externals,--*)
+			__gitcomp "--revision="
+			;;
+		log,--*)
+			__gitcomp "
+				--limit= --revision= --verbose --incremental
+				--oneline --show-commit --non-recursive
+				--authors-file=
+				"
+			;;
+		rebase,--*)
+			__gitcomp "
+				--merge --verbose --strategy= --local
+				--fetch-all $fc_opts
+				"
+			;;
+		commit-diff,--*)
+			__gitcomp "--message= --file= --revision= $cmt_opts"
+			;;
+		info,--*)
+			__gitcomp "--url"
+			;;
+		*)
+			COMPREPLY=()
+			;;
+		esac
 	fi
 }
 
@@ -1160,15 +1313,18 @@ _git ()
 		c=$((++c))
 	done
 
-	if [ $c -eq $COMP_CWORD -a -z "$command" ]; then
+	if [ -z "$command" ]; then
 		case "${COMP_WORDS[COMP_CWORD]}" in
 		--*=*) COMPREPLY=() ;;
 		--*)   __gitcomp "
+			--paginate
 			--no-pager
 			--git-dir=
 			--bare
 			--version
 			--exec-path
+			--work-tree=
+			--help
 			"
 			;;
 		*)     __gitcomp "$(__git_commands) $(__git_aliases)" ;;
@@ -1212,6 +1368,7 @@ _git ()
 	show-branch) _git_log ;;
 	stash)       _git_stash ;;
 	submodule)   _git_submodule ;;
+	svn)         _git_svn ;;
 	tag)         _git_tag ;;
 	whatchanged) _git_log ;;
 	*)           COMPREPLY=() ;;
@@ -1220,10 +1377,17 @@ _git ()
 
 _gitk ()
 {
+	__git_has_doubledash && return
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local g="$(git rev-parse --git-dir 2>/dev/null)"
+	local merge=""
+	if [ -f $g/MERGE_HEAD ]; then
+		merge="--merge"
+	fi
 	case "$cur" in
 	--*)
-		__gitcomp "--not --all"
+		__gitcomp "--not --all $merge"
 		return
 		;;
 	esac
@@ -1262,6 +1426,7 @@ complete -o default -o nospace -F _git_shortlog git-shortlog
 complete -o default -o nospace -F _git_show git-show
 complete -o default -o nospace -F _git_stash git-stash
 complete -o default -o nospace -F _git_submodule git-submodule
+complete -o default -o nospace -F _git_svn git-svn
 complete -o default -o nospace -F _git_log git-show-branch
 complete -o default -o nospace -F _git_tag git-tag
 complete -o default -o nospace -F _git_log git-whatchanged
