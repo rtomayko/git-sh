@@ -121,6 +121,7 @@ _git_cmd_cfg=(
 	'push           alias  stdcmpl'
 	'quiltimport    alias'
 	'rebase         alias  stdcmpl'
+	'reflog         alias'
 	'remote         alias  stdcmpl'
 	'repack         alias'
 	'repo-config    alias'
