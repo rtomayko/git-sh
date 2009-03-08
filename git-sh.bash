@@ -173,7 +173,9 @@ _git_prompt_setup() {
 	rel=$(git rev-parse --show-prefix 2>/dev/null)
 	rel="${rel%/}"
 	loc="${PWD%/$rel}"
-	dirty=$($(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo " *")
+
+	[ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit (working directory clean)" ] &&
+	dirty=" *" || dirty=""
 }
 
 # read the color.sh git config value to determine which variation of prompt
@@ -184,6 +186,7 @@ _git_prompt_detect() {
 		# TODO add "color.sh.THING" config values
 		COLOR_BRANCH='\[$(git config --get-color color.branch.current 2>/dev/null)\]'
 		COLOR_WORKDIR='\[$(git config --get-color color.diff.meta 2>/dev/null)\]'
+		COLOR_DIRTY='\[$(git config --get-color color.diff.old 2>/dev/null)\]'
 		_git_prompt_color
 	else
 		_git_prompt_plain
@@ -197,7 +200,7 @@ _git_prompt_plain() {
 
 _git_prompt_color() {
 	_git_prompt_setup
-	PS1="${COLOR_BRANCH}${br}${COLOR_RESET}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_RESET}${dirty}> "
+	PS1="${COLOR_BRANCH}${br}${COLOR_RESET}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_DIRTY}${dirty}${COLOR_RESET}> "
 }
 
 PROMPT_COMMAND=_git_prompt_detect
