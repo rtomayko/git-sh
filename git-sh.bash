@@ -161,57 +161,56 @@ done
 
 # PROMPT =======================================================================
 
-PROMPT_COMMAND=_git_prompt
-ANSI_RESET="\[\033[0;39;49m\]"
+PS1='`_git_headname`!`_git_workdir``_git_dirty`> '
 
-# read the color.sh git config value to determine which variation of prompt
-# command to use.
-_git_prompt() {
-	git config --get-colorbool color.sh 2>/dev/null &&
-		_git_prompt_color ||
-		_git_prompt_plain
-}
-
-_git_prompt_plain() {
-	PS1="git:`_git_headname`!`_git_workloc``_git_dirty`> "
-}
-
-_git_prompt_color() {
-	PS1="\
-`_git_color branch.current``_git_headname`${ANSI_RESET}!\
-`_git_color diff.meta``_git_workloc`${ANSI_RESET}\
-`_git_color diff.old``_git_dirty`${ANSI_RESET}\
-> "
-}
-
-# retrieve an ANSI color escape sequence from git config
-_git_color() {
-	local color
-	color=`git config --get-color color.$1 2>/dev/null`
-	[ -n "$color" ] && echo -ne "\[$color\]"
-}
+ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
 # detect whether the tree is in a dirty state. returns
 _git_dirty() {
 	[ -z "`git status 2>/dev/null | grep -F '(working directory clean)'`" ] &&
-	echo " *" ||
-	return 0
+	_git_apply_color " *" "color.sh.dirty" "red" ||
+	true
 }
 
 # detect the current branch; use 7-sha when not on branch
 _git_headname() {
 	local br=`git symbolic-ref -q HEAD 2>/dev/null`
 	[ -n "$br" ] &&
-		echo ${br#refs/heads/} ||
-		git rev-parse --short HEAD 2>/dev/null
+		br=${br#refs/heads/} ||
+		br=`git rev-parse --short HEAD 2>/dev/null`
+	_git_apply_color "$br" "color.sh.branch" "yellow reverse"
 }
 
 # detect working directory relative to working tree root
-_git_workloc() {
+_git_workdir() {
 	subdir=`git rev-parse --show-prefix 2>/dev/null`
 	subdir="${subdir%/}"
 	workdir="${PWD%/$subdir}"
-	echo ${workdir/*\/}${subdir:+/$subdir}
+	_git_apply_color "${workdir/*\/}${subdir:+/$subdir}" "color.sh.workdir" "blue bold"
+}
+
+# determine whether color should be enabled. this checks git's color.ui
+# option and then color.sh.
+_git_color_enabled() {
+	[ `git config --get-colorbool color.sh true` = "true" ]
+}
+
+# apply a color to the first argument
+_git_apply_color() {
+	local output="$1" color="$2" default="$3"
+	if _git_color_enabled ; then
+		color=`_git_color "$color" "$default"`
+		echo -ne "${color}${output}${ANSI_RESET}"
+	else
+		echo -ne "$output"
+	fi
+}
+
+# retrieve an ANSI color escape sequence from git config
+_git_color() {
+	local color
+	color=`git config --get-color "$1" "$2" 2>/dev/null`
+	[ -n "$color" ] && echo -ne "\001$color\002"
 }
 
 # HELP ========================================================================

@@ -34,14 +34,20 @@ the following to add a command alias in `~/.gitconfig`:
     $ git-sh --configure
     $ git sh
 
-The git-sh prompt supports ANSI color but is disabled by default. To
-enable, set the `color.sh` config value to `auto`:
+The git-sh prompt includes ANSI color support but it's disabled by default
+(unless the git `color.ui` option is enabled). To enable git-sh's prompt
+colors explicitly, set the `color.sh` config value to `auto`:
 
-    $ git config color.sh auto
+    $ git config --global color.sh auto
 
-The default prompt uses the colors you have configured for
-`color.branch.current` and `color.diff.meta`. See
-[colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for
+The prompt colors can be customized by setting the `color.sh.branch`,
+`color.sh.workdir`, and `color.sh.dirty` git config values:
+
+    $ git config --global color.sh.branch 'yello reverse'
+    $ git config --global color.sh.workdir 'blue bold'
+    $ git config --global color.sh.dirty 'red'
+
+See [colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for
 information on customizing.
 
 Basic Usage
