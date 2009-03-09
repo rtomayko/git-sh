@@ -161,51 +161,60 @@ done
 
 # PROMPT =======================================================================
 
-COLOR_RESET="\[\033[0;39;49m\]"
-
-_git_prompt_setup() {
-	br=$(git symbolic-ref -q HEAD 2>/dev/null)
-	if [ -n "$br" ] ; then
-		br=${br#refs/heads/}
-	else
-		br=$(git rev-parse --short HEAD 2>/dev/null)
-	fi
-	rel=$(git rev-parse --show-prefix 2>/dev/null)
-	rel="${rel%/}"
-	loc="${PWD%/$rel}"
-
-	[ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit (working directory clean)" ] &&
-	dirty=" *" || dirty=""
-}
+PROMPT_COMMAND=_git_prompt
+ANSI_RESET="\[\033[0;39;49m\]"
 
 # read the color.sh git config value to determine which variation of prompt
 # command to use.
-_git_prompt_detect() {
-	if git config --get-colorbool color.sh 2>/dev/null ;
-	then
-		# TODO add "color.sh.THING" config values
-		COLOR_BRANCH='\[$(git config --get-color color.branch.current 2>/dev/null)\]'
-		COLOR_WORKDIR='\[$(git config --get-color color.diff.meta 2>/dev/null)\]'
-		COLOR_DIRTY='\[$(git config --get-color color.diff.old 2>/dev/null)\]'
-		_git_prompt_color
-	else
+_git_prompt() {
+	git config --get-colorbool color.sh 2>/dev/null &&
+		_git_prompt_color ||
 		_git_prompt_plain
-	fi
 }
 
 _git_prompt_plain() {
-	_git_prompt_setup
-	PS1="git:$br!${loc/*\/}${rel:+/$rel}${dirty}> "
+	PS1="git:`_git_headname`!`_git_workloc``_git_dirty`> "
 }
 
 _git_prompt_color() {
-	_git_prompt_setup
-	PS1="${COLOR_BRANCH}${br}${COLOR_RESET}!${COLOR_WORKDIR}${loc/*\/}${rel:+/$rel}${COLOR_DIRTY}${dirty}${COLOR_RESET}> "
+	PS1="\
+`_git_color branch.current``_git_headname`${ANSI_RESET}!\
+`_git_color diff.meta``_git_workloc`${ANSI_RESET}\
+`_git_color diff.old``_git_dirty`${ANSI_RESET}\
+> "
 }
 
-PROMPT_COMMAND=_git_prompt_detect
+# retrieve an ANSI color escape sequence from git config
+_git_color() {
+	local color
+	color=`git config --get-color color.$1 2>/dev/null`
+	[ -n "$color" ] && echo -ne "\[$color\]"
+}
 
-# try to provide a decent help command
+# detect whether the tree is in a dirty state. returns
+_git_dirty() {
+	[ -z "`git status 2>/dev/null | grep -F '(working directory clean)'`" ] &&
+	echo " *" ||
+	return 0
+}
+
+# detect the current branch; use 7-sha when not on branch
+_git_headname() {
+	local br=`git symbolic-ref -q HEAD 2>/dev/null`
+	[ -n "$br" ] &&
+		echo ${br#refs/heads/} ||
+		git rev-parse --short HEAD 2>/dev/null
+}
+
+# detect working directory relative to working tree root
+_git_workloc() {
+	subdir=`git rev-parse --show-prefix 2>/dev/null`
+	subdir="${subdir%/}"
+	workdir="${PWD%/$subdir}"
+	echo ${workdir/*\/}${subdir:+/$subdir}
+}
+
+# HELP ========================================================================
 
 _help_display() {
 	# show git's inbuilt help, after some tweaking...
