@@ -43,7 +43,7 @@ colors explicitly, set the `color.sh` config value to `auto`:
 The prompt colors can be customized by setting the `color.sh.branch`,
 `color.sh.workdir`, and `color.sh.dirty` git config values:
 
-    $ git config --global color.sh.branch 'yello reverse'
+    $ git config --global color.sh.branch 'yellow reverse'
     $ git config --global color.sh.workdir 'blue bold'
     $ git config --global color.sh.dirty 'red'
 
