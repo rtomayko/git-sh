@@ -167,9 +167,12 @@ ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
 # detect whether the tree is in a dirty state. returns
 _git_dirty() {
-	[ -z "`git status 2>/dev/null | grep -F '(working directory clean)'`" ] &&
-	_git_apply_color " *" "color.sh.dirty" "red" ||
-	true
+	if git status 2>/dev/null | fgrep -q '(working directory clean)'; then
+		local dirty_marker="`git config gitsh.dirty || echo ' *'`"
+		_git_apply_color "$dirty_marker" "color.sh.dirty" "red"
+	else
+		return 0
+	fi
 }
 
 # detect the current branch; use 7-sha when not on branch
