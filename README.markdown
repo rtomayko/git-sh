@@ -80,7 +80,8 @@ The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
 immediately before the shell becomes interactive.  An [example `gitshrc`
 file][1] is include in the distribution as an example.
 
-[1]: master/gitshrc-example.bash "Ryan's ~/.gitshrc file"
+[1]: http://github.com/rtomayko/git-sh/blob/master/gitshrc-example.bash
+     "Ryan's ~/.gitshrc file"
 
 Note also that your `~/.bashrc` file is sourced into the shell before either
 `/etc/gitshrc` or `~/.gitshrc`, so any base bash customizations not
