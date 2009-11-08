@@ -412,9 +412,16 @@ __git_complete_revlist ()
 
 __git_complete_remote_or_refspec ()
 {
-	local cmd="${COMP_WORDS[1]}"
+	local cmd="${COMP_WORDS[0]}"
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	local i c=2 remote="" pfx="" lhs=1 no_complete_refspec=0
+	local i c=1 remote="" pfx="" lhs=1 no_complete_refspec=0
+
+	# adjust args upward when completing git *
+	[ "$cmd" = "git" ] && {
+		cmd="${COMP_WORDS[1]}"
+		c=2
+	}
+
 	while [ $c -lt $COMP_CWORD ]; do
 		i="${COMP_WORDS[c]}"
 		case "$i" in
@@ -792,7 +799,7 @@ _git_branch ()
 
 _git_bundle ()
 {
-	local cmd="${COMP_WORDS[2]}"
+	local cmd="${COMP_WORDS[1]}"
 	case "$COMP_CWORD" in
 	2)
 		__gitcomp "create list-heads verify unbundle"
