@@ -1,0 +1,84 @@
+git-sh(1) -- a git shell
+========================
+
+## SYNOPSIS
+
+`git-sh`
+
+## DESCRIPTION
+
+`git-sh` starts an interactive `bash(1)` session with modifications for
+git-heavy workflows. Typical usage is to change into the directory of a git work
+tree or bare repository and run the `git-sh` command to start an interactive
+shell session. For example, with a work tree at `~/git/something`:
+
+    $ cd ~/git/something
+    $ git-sh
+    master!something*>
+
+The default `PS1` prompt displays the current branch, git repository name,
+relative path to current working directory, and working copy dirty status.
+
+Top-level command aliases are created for all `git(1)` sub commands. Here, the
+`git-fetch(1)`, `git-checkout(1)`, and `git-log(1)` commands are used directly
+at the top-level:
+
+    master!something> fetch origin
+    master!something> checkout -b some-topic origin/master
+    some-topic!something> log
+    ...
+
+Anything defined in the `[alias]` section of the repository, user, or global git
+config files are also available as top-level shell commands. Assuming a
+`~/.gitconfig` that looked like this:
+
+    [alias]
+      ci = commit --verbose
+      ca = commit -a
+      d  = diff
+      s  = status
+      thanks = !git-thanks
+
+... you might then have the following shell session:
+
+    master!something> echo "stuff" >somefile
+    master!something*> s
+    M  somefile
+    master!something*> d
+    diff --git a/somefile b/somefile
+    -- a/somefile
+    ++ b/somefile
+    @@ -0,0 +1 @@
+    + stuff
+    master!something*> ca -m "add stuff"
+    master!something> thanks HEAD
+
+## COMPLETION
+
+Bash completion support is automatically enabled for all git built-in commands
+and also for aliases defined in the user `~/.gitconfig` file. The auto-completion
+logic is smart enough to know an alias `d` that expands to `git-diff` should use
+the same completion configuration as the `git-diff` command.
+
+The completion code is a slightly modified version of the git bash completion
+script shipped with the core git distribution. The script is built into the
+`git-sh` executable at compile time and need not be obtained or installed
+separately.
+
+## FILES
+
+The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
+immediately before the shell becomes interactive. These files can be used to
+define custom git aliases--using the `gitalias` command--, to change the default
+`PS1` prompt, or to perform any other desired shell modifications.
+
+The `~/.bashrc` file is sourced into the shell before either `/etc/gitshrc` or
+`~/.gitshrc`. Any base bash customizations not explicitly overridden by `git-sh`
+should be available.
+
+[1]: http://github.com/rtomayko/git-sh/blob/master/gitshrc-example.bash
+     "Ryan's ~/.gitshrc file"
+
+## SEE ALSO
+
+bash(1), git(1)
