@@ -158,6 +158,21 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	done
 done
 
+# Create aliases for everything defined in the gitconfig [alias] section.
+_git_import_aliases () {
+    eval "$(
+        git config --get-regexp 'alias\..*' |
+        sed 's/^alias\.//'                  |
+        while read key command
+        do
+            if expr -- "$command" : '!' >/dev/null
+            then echo "alias $key='${command#!}'"
+            else echo "gitalias $key='git $command'"
+            fi
+        done
+    )"
+}
+
 # PROMPT =======================================================================
 
 PS1='`_git_headname`!`_git_workdir``_git_dirty`> '
