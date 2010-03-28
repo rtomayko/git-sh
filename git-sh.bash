@@ -29,10 +29,9 @@
 }
 
 # we expect to be sourced into an interactive shell. when executed as a
-# command, kick off a new shell and source us. this is a pretty cool hack;
-# make it better.
+# command, kick off a new shell and source us.
 [ "$0" = 'bash' ] ||
-exec /usr/bin/env bash --rcfile "$@" "$0"
+exec /usr/bin/env bash --rcfile "$0" "$@"
 
 # source the user's .bashrc file
 [ -r ~/.bashrc ] && {
