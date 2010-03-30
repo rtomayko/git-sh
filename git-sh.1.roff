@@ -1,0 +1,287 @@
+.\" generated with Ronn/v0.4.1
+.\" http://github.com/rtomayko/ronn/
+.
+.TH "GIT\-SH" "1" "March 2010" "Ryan Tomayko" ""
+.
+.SH "NAME"
+\fBgit\-sh\fR \-\- a git shell
+.
+.SH "SYNOPSIS"
+\fBgit\-sh\fR
+.
+.SH "DESCRIPTION"
+\fBgit\-sh\fR starts an interactive \fBbash(1)\fR session modified for git\-heavy
+workflows. Typical usage is to change into the directory of a git work tree or
+bare repository and run the \fBgit\-sh\fR command to start an interactive shell
+session.
+.
+.P
+Top\-level command aliases are created for all core \fBgit(1)\fR subcommands, git\-sh
+builtin aliases (see \fIBUILTIN ALIASES\fR), and git command aliases defined in \fB~/.gitconfig\fR.
+.
+.SH "BUILTIN ALIASES"
+\fBgit\-sh\fR loads a set of standard aliases in addition to all core git commands.
+The builtin aliases are overridden by aliases defined in the user or system
+gitconfig files.
+.
+.TP
+\fBa\fR
+git add
+.
+.TP
+\fBb\fR
+git branch
+.
+.TP
+\fBc\fR
+git checkout
+.
+.TP
+\fBd\fR
+git diff
+.
+.TP
+\fBf\fR
+git fetch \-\-prune
+.
+.TP
+\fBk\fR
+git cherry\-pick
+.
+.TP
+\fBl\fR
+git log \-\-pretty=oneline \-\-abbrev\-commit
+.
+.TP
+\fBn\fR
+git commit \-\-verbose \-\-amend
+.
+.TP
+\fBr\fR
+git remote
+.
+.TP
+\fBs\fR
+git commit \-\-dry\-run \-\-short
+.
+.TP
+\fBt\fR
+git diff \-\-cached
+.
+.SS "The Staging Area"
+.
+.TP
+\fBa\fR
+git add
+.
+.TP
+\fBaa\fR
+git add \-\-update (mnemonic: "add all")
+.
+.TP
+\fBstage\fR
+git add
+.
+.TP
+\fBap\fR
+git add \-\-patch
+.
+.TP
+\fBp\fR
+git diff \-\-cached (mnemonic: "patch")
+.
+.TP
+\fBps\fR
+git diff \-\-cached \-\-stat (mnemonic: "patch stat")
+.
+.TP
+\fBunstage\fR
+git reset HEAD
+.
+.SS "Commits and Commit History"
+.
+.TP
+\fBci\fR
+git commit \-\-verbose
+.
+.TP
+\fBca\fR
+git commit \-\-verbose \-\-all
+.
+.TP
+\fBamend\fR
+git commit \-\-verbose \-\-amend
+.
+.TP
+\fBn\fR
+git commit \-\-verbose \-\-amend
+.
+.TP
+\fBk\fR
+git cherry\-pick
+.
+.TP
+\fBre\fR
+git rebase \-\-interactive
+.
+.TP
+\fBpop\fR
+git reset \-\-soft HEAD^
+.
+.TP
+\fBpeek\fR
+git log \-p \-\-max\-count=1
+.
+.SS "Fetching and Pulling"
+.
+.TP
+\fBf\fR
+git fetch
+.
+.TP
+\fBpm\fR
+git pull (mnemonic: "pull merge")
+.
+.TP
+\fBpr\fR
+git pull \-\-rebase (mnemonic: "pull rebase")
+.
+.SS "Miscellaneous Commands"
+.
+.TP
+\fBd\fR
+git diff
+.
+.TP
+\fBds\fR
+git diff \-\-stat (mnemonic: "diff stat")
+.
+.TP
+\fBhard\fR
+git reset \-\-hard
+.
+.TP
+\fBsoft\fR
+git reset \-\-soft
+.
+.SH "CUSTOM ALIASES"
+Anything defined in the \fB[alias]\fR section of the repository, user, or system git
+config files are also available as top\-level shell commands. Assuming a \fB~/.gitconfig\fR that looked like this:
+.
+.IP "" 4
+.
+.nf
+[alias]
+  ci = commit \-\-verbose
+  ca = commit \-a
+  d  = diff
+  s  = status
+  thanks = !git\-thanks
+.
+.fi
+.
+.IP "" 0
+.
+.P
+... you might then have the following shell session:
+.
+.IP "" 4
+.
+.nf
+master!something> echo "stuff" >somefile
+master!something*> s
+M  somefile
+master!something*> d
+diff \-\-git a/somefile b/somefile
+\-\- a/somefile
+++ b/somefile
+@@ \-0,0 +1 @@
++ stuff
+master!something*> ca \-m "add stuff"
+master!something> thanks HEAD
+.
+.fi
+.
+.IP "" 0
+.
+.SS "PROMPT"
+The default prompt shows the current branch, a bang (\fB!\fR), and then the relative
+path to the current working directory from the root of the work tree.  If the
+work tree includes modified files that have not yet been staged, a dirty status
+indicator (\fB*\fR) is also displayed.
+.
+.P
+The git\-sh prompt includes ANSI colors when the git \fBcolor.ui\fR option is set and
+enabled. To enable git\-sh's prompt colors explicitly, set the \fBcolor.sh\fR config
+value to \fBauto\fR:
+.
+.IP "" 4
+.
+.nf
+$ git config \-\-global color.sh auto
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Customize prompt colors by setting the \fBcolor.sh.branch\fR, \fBcolor.sh.workdir\fR,
+and \fBcolor.sh.dirty\fR git config values:
+.
+.IP "" 4
+.
+.nf
+$ git config \-\-global color.sh.branch 'yellow reverse'
+$ git config \-\-global color.sh.workdir 'blue bold'
+$ git config \-\-global color.sh.dirty 'red'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+See \fIcolors in git\fR for information.
+.
+.SH "COMPLETION"
+Bash completion support is automatically enabled for all git built\-in commands
+and also for aliases defined in the user \fB~/.gitconfig\fR file. The auto\-completion
+logic is smart enough to know an alias \fBd\fR that expands to \fBgit\-diff\fR should use
+the same completion configuration as the \fBgit\-diff\fR command.
+.
+.P
+The completion code is a slightly modified version of the git bash completion
+script shipped with the core git distribution. The script is built into the\fBgit\-sh\fR executable at compile time and need not be obtained or installed
+separately.
+.
+.SH "CUSTOMIZING"
+Most \fBgit\-sh\fR behavior can be configured by editing the user or system gitconfig
+files (\fB~/.gitconfig\fR and \fB/etc/gitconfig\fR) either by hand or using \fBgit\-config(1)\fR. The \fB[alias]\fR section is used to create basic command aliases.
+.
+.P
+The \fB/etc/gitshrc\fR and \fB~/.gitshrc\fR files are sourced (in that order)
+immediately before the shell becomes interactive.
+.
+.P
+The \fB~/.bashrc\fR file is sourced before either \fB/etc/gitshrc\fR or \fB~/.gitshrc\fR.
+Any bash customizations defined there and not explicitly overridden by \fBgit\-sh\fR
+are also available.
+.
+.SH "ENVIRONMENT"
+.
+.TP
+\fBPS1\fR
+Set to the dynamic git\-sh prompt. This can be customized in the \fB~/.gitshrc\fR
+or \fB/etc/gitshrc\fR files.
+.
+.TP
+\fBGIT_DIR\fR
+Explicitly set the path to the git repository instead of assuming the
+nearest \fB.git\fR path.
+.
+.TP
+\fBGIT_WORK_TREE\fR
+Explicitly set the path to the root of the work tree instead of assuming
+the nearest parent directory with a \fB.git\fR repository.
+.
+.SH "SEE ALSO"
+bash(1), git(1), git\-config(1)
