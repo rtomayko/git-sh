@@ -15,7 +15,10 @@ RONN     = ronn --date=2010-03-30 \
 all: $(PROGRAM)
 
 $(PROGRAM): $(SOURCES)
-	cat $(SOURCES) > $@
+	rm -f $@
+	cat $(SOURCES) > $@+
+	bash -n $@+
+	mv $@+ $@
 	chmod 0755 $@
 
 git-sh.1.roff: git-sh.1.ronn
