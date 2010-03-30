@@ -36,7 +36,10 @@ install: $(PROGRAM)
 	install -m 0644 git-sh.1.roff "$(mandir)/man1/git-sh.1"
 
 clean:
-	$(RM) $(PROGRAM)
-	$(RM) *.1.html *.1.roff
+	rm -f $(PROGRAM)
+	rm -f git-sh.1.html
 
-.PHONY: run install site clean
+pages: git-sh.1.html
+	cp $^ pages/$^
+
+.PHONY: run install site clean pages
