@@ -21,11 +21,8 @@ doc: git-sh.1.roff git-sh.1.html
 run: all
 	./$(PROGRAM)
 
-install: $(PROGRAM)
-	install -m 0755 $^ $(EXEC_DIR)
-
-site:
-	$(MAKE) -C site
+install:
+	install -c -m 0755 ./$(PROGRAM) $(EXEC_DIR)
 
 clean:
 	$(RM) $(PROGRAM)
