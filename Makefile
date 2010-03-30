@@ -3,11 +3,13 @@ DESTDIR  =
 PREFIX   = $(DESTDIR)/usr/local
 EXEC_DIR = $(PREFIX)/bin
 PROGRAM  = git-sh
+SOURCES  = git-sh.bash git-completion.bash \
+           git-sh-aliases.bash git-sh-config.bash
 
 all: $(PROGRAM)
 
-$(PROGRAM): git-sh.bash git-completion.bash git-sh-config.bash
-	cat $^ > $@
+$(PROGRAM): $(SOURCES)
+	cat $(SOURCES) > $@
 	chmod 0755 $@
 
 git-sh.1.roff: git-sh.1.ronn
