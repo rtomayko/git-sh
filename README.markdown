@@ -6,96 +6,106 @@ A customized bash shell suitable for git work.
 The `git-sh` command starts an interactive bash shell tweaked for heavy git
 interaction:
 
-  * Makes all git command porcelains available as top-level command aliases.
-  * Custom prompt with branch and current repository.
-  * Shawn O. Pearce's bash completion support built-in.
-  * Customizable via `/etc/gitshrc` and `~/.gitshrc` config files (add
-    aliases, change prompt, etc.)
-  * `gitalias` command for defining shorthand git aliases with completion.
-  * Respects `~/.bashrc` and `~/.inputrc` configuration.
+  * All git commands available at top-level
+    (`checkout master` = `git checkout master`)
+  * All git aliases defined in the `[alias]` section
+    of `~/.gitconfig` available at top-level.
+  * Shawn O. Pearce's excellent bash completion strapped onto
+    all core commands and git aliases.
+  * Custom prompt with current branch, repository, and
+    work tree dirty indicator.
+  * Customizable via `/etc/gitshrc` and `~/.gitshrc` config files;
+    for creating aliases, changing the prompt, etc.
+  * Runs on top of normal bash (`~/.bashrc`) and
+    readline (`~/.inputrc`) configurations.
 
 Installation
 ------------
 
-I suppose we can assume you have git installed:
+Install the most recent available version under `/usr/local`:
 
     $ git clone git://github.com/rtomayko/git-sh.git
     $ cd git-sh
     $ make
     $ sudo make install
 
-The `make install` command copies the `git-sh` executable to
-`/usr/local/bin`. Use the `PREFIX` environment variable to specify
-a different location (or just copy and chmod the `git-sh` file).
+Start a shell with `git-sh`:
 
-If you'd like to be able to run `git sh` instead of `git-sh`, use
-the following to add a command alias in `~/.gitconfig`:
+    $ git-sh
+    master!git-sh> help
 
-    $ git-sh --configure
+Use the `PREFIX` environment variable to specify a different install location.
+For example, under `~/bin`:
+
+    $ make install PREFIX=~
+
+Basic Usage
+-----------
+
+Typical usage is to change into a git working copy and then start the shell:
+
+    $ cd mygreatrepo
     $ git sh
+    master!mygreatrepo> help
 
-The git-sh prompt includes ANSI color support but it's disabled by default
-(unless the git `color.ui` option is enabled). To enable git-sh's prompt
-colors explicitly, set the `color.sh` config value to `auto`:
+Core git commands and git command aliases defined in `~/.gitconfig` can be
+used as top-level commands:
+
+    master!mygreatrepo> checkout -b new
+    new!mygreatrepo> log -p
+    new!mygreatrepo> rebase -i HEAD~10
+
+It's really just a normal bash shell, though, so all commands on `PATH` and any
+aliases defined in `~/.bashrc` are also available:
+
+    new!mygreatrepo> ls -l
+    new!mygreatrepo> vim somefile
+
+*IMPORTANT: `rm`, `mv`, and `diff` are aliased to their git counterparts.  Use
+`command(1)` (e.g., `command rm`) or qualify the command (e.g. `/bin/rm`)
+to use system versions.*
+
+Prompt
+------
+
+The default prompt shows the current branch, a bang (`!`), and then the relative
+path to the current working directory from the root of the work tree.  If the
+work tree includes modified files that have not yet been staged, a dirty status
+indicator (`*`) is also displayed.
+
+The git-sh prompt includes ANSI colors when the git `color.ui` option is set and
+enabled. To enable git-sh's prompt colors explicitly, set the `color.sh` config
+value to `auto`:
 
     $ git config --global color.sh auto
 
-The prompt colors can be customized by setting the `color.sh.branch`,
-`color.sh.workdir`, and `color.sh.dirty` git config values:
+Customize prompt colors by setting the `color.sh.branch`, `color.sh.workdir`,
+and `color.sh.dirty` git config values:
 
     $ git config --global color.sh.branch 'yellow reverse'
     $ git config --global color.sh.workdir 'blue bold'
     $ git config --global color.sh.dirty 'red'
 
-See [colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for
-information on customizing.
-
-Basic Usage
------------
-
-I typically change into a git working copy before starting the shell:
-
-    $ cd some-git-repo
-    $ git sh
-    master!some-git-repo>
-
-The shell's default prompt shows the current branch, a bang, and the
-relative path to the current working directory from the nearest git working
-copy.
-
-Most git commands can be executed directly:
-
-    master!some-git-repo> checkout -b new-branch
-    new-branch!some-git-repo> log -p
-    new-branch!some-git-repo> rebase -i HEAD~10
-
-IMPORTANT: `rm`, `mv`, and `diff` are aliased to their git counterparts.
-Use the `command` command (eg. `command rm`) or qualify the command
-(e.g. `/bin/rm`) to use system versions.
+See [colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for information.
 
 Customizing
 -----------
 
+Most `git-sh` behavior can be configured by editing the user or system gitconfig
+files (`~/.gitconfig` and `/etc/gitconfig`) either by hand or using
+`git-config(1)`. The `[alias]` section is used to create basic command aliases.
+
 The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
-immediately before the shell becomes interactive.  An [example `gitshrc`
-file][1] is include in the distribution as an example.
+immediately before the shell becomes interactive.
 
 [1]: http://github.com/rtomayko/git-sh/blob/master/gitshrc-example.bash
      "Ryan's ~/.gitshrc file"
 
-Note also that your `~/.bashrc` file is sourced into the shell before either
-`/etc/gitshrc` or `~/.gitshrc`, so any base bash customizations not
-explicitly overridden by `git-sh` should be available.
+The `~/.bashrc` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
+Any bash customizations defined there and not explicitly overridden by `git-sh`
+are also available.
 
-Help
-----
-
-The `help` command shows git's help output followed by a list of custom
-aliases from your `~/.gitshrc` file:
-
-    master!some-git-repo> help
-
-License
+Copying
 -------
 
 Copyright (C) 2008 [Ryan Tomayko](http://tomayko.com/)  
