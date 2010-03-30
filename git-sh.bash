@@ -232,23 +232,28 @@ _git_color() {
 # HELP ========================================================================
 
 _help_display() {
+	local name value
 	# show git's inbuilt help, after some tweaking...
-	git --help |
-		grep -v 'usage: git ' |
-		sed "s/See 'git help/See 'help/"
+	git --help | grep -v "See 'git help"
 
-	# show aliases from ~/.gitshrc
-	[ -r ~/.gitshrc ] && {
-		echo ; echo 'Aliases from ~/.gitshrc'
-		perl -ne's/(?:git)?alias +// or next; s/=/\t\t\t/; print' ~/.gitshrc
-	}
+	# show aliases defined in ~/.gitconfig
+	echo "Command aliases:"
+	git config --get-regexp 'alias\..*' |
+	sed 's/^alias\.//'                  |
+	sort                                |
+	while read name value
+	do printf "   %-10s %-65s\n" "$name" "$value"
+	done
+
+	printf "\nSee 'help COMMAND' for more information on a specific command.\n"
 }
 
 help() {
 	local _git_pager=$(git config core.pager)
-	[ $# = 1 ] &&
-		git help $1 ||
-		(_help_display | ${_git_pager:-${PAGER:-less}})
+	if [ $# = 1 ];
+	then git help $1
+	else (_help_display | ${_git_pager:-${PAGER:-less}})
+	fi
 }
 complete -o default -o nospace -F _git help
 
