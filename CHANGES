@@ -1,0 +1,9 @@
+= 0.5 / unreleased
+
+ * Addition of built-in aliases taken from the example gitshrc file.
+
+ * Aliases defined in the [alias] section of ~/.gitconfig are available from
+   the top-level of the shell with completion. These aliases override builtin
+   aliases.
+
+ * Addition of git-sh(1) manpage.
