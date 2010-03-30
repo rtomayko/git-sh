@@ -98,9 +98,6 @@ files (`~/.gitconfig` and `/etc/gitconfig`) either by hand or using
 The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
 immediately before the shell becomes interactive.
 
-[1]: http://github.com/rtomayko/git-sh/blob/master/gitshrc-example.bash
-     "Ryan's ~/.gitshrc file"
-
 The `~/.bashrc` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
 Any bash customizations defined there and not explicitly overridden by `git-sh`
 are also available.

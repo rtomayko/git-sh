@@ -7,28 +7,103 @@ git-sh(1) -- a git shell
 
 ## DESCRIPTION
 
-`git-sh` starts an interactive `bash(1)` session with modifications for
-git-heavy workflows. Typical usage is to change into the directory of a git work
-tree or bare repository and run the `git-sh` command to start an interactive
-shell session. For example, with a work tree at `~/git/something`:
+`git-sh` starts an interactive `bash(1)` session modified for git-heavy
+workflows. Typical usage is to change into the directory of a git work tree or
+bare repository and run the `git-sh` command to start an interactive shell
+session.
 
-    $ cd ~/git/something
-    $ git-sh
-    master!something*>
+Top-level command aliases are created for all core `git(1)` subcommands, git-sh
+builtin aliases (see *BUILTIN ALIASES*), and git command aliases defined in
+`~/.gitconfig`.
 
-The default `PS1` prompt displays the current branch, git repository name,
-relative path to current working directory, and working copy dirty status.
+## BUILTIN ALIASES
 
-Top-level command aliases are created for all `git(1)` sub commands. Here, the
-`git-fetch(1)`, `git-checkout(1)`, and `git-log(1)` commands are used directly
-at the top-level:
+**git-sh** loads a set of standard aliases in addition to all core git commands.
+The builtin aliases are overridden by aliases defined in the user or system
+gitconfig files.
 
-    master!something> fetch origin
-    master!something> checkout -b some-topic origin/master
-    some-topic!something> log
-    ...
+  * `a`:
+    git add
+  * `b`:
+    git branch
+  * `c`:
+    git checkout
+  * `d`:
+    git diff
+  * `f`:
+    git fetch --prune
+  * `k`:
+    git cherry-pick
+  * `l`:
+    git log --pretty=oneline --abbrev-commit
+  * `n`:
+    git commit --verbose --amend
+  * `r`:
+    git remote
+  * `s`:
+    git commit --dry-run --short
+  * `t`:
+    git diff --cached
 
-Anything defined in the `[alias]` section of the repository, user, or global git
+### The Staging Area
+
+  * `a`:
+    git add
+  * `aa`:
+    git add --update (mnemonic: "add all")
+  * `stage`:
+    git add
+  * `ap`:
+    git add --patch
+  * `p`:
+    git diff --cached (mnemonic: "patch")
+  * `ps`:
+    git diff --cached --stat (mnemonic: "patch stat")
+  * `unstage`:
+    git reset HEAD
+
+### Commits and Commit History
+
+  * `ci`:
+    git commit --verbose
+  * `ca`:
+    git commit --verbose --all
+  * `amend`:
+    git commit --verbose --amend
+  * `n`:
+    git commit --verbose --amend
+  * `k`:
+    git cherry-pick
+  * `re`:
+    git rebase --interactive
+  * `pop`:
+    git reset --soft HEAD^
+  * `peek`:
+    git log -p --max-count=1
+
+### Fetching and Pulling
+
+  * `f`:
+    git fetch
+  * `pm`:
+    git pull (mnemonic: "pull merge")
+  * `pr`:
+    git pull --rebase (mnemonic: "pull rebase")
+
+### Miscellaneous Commands
+
+  * `d`:
+    git diff
+  * `ds`:
+    git diff --stat (mnemonic: "diff stat")
+  * `hard`:
+    git reset --hard
+  * `soft`:
+    git reset --soft
+
+## CUSTOM ALIASES
+
+Anything defined in the `[alias]` section of the repository, user, or system git
 config files are also available as top-level shell commands. Assuming a
 `~/.gitconfig` that looked like this:
 
@@ -53,6 +128,28 @@ config files are also available as top-level shell commands. Assuming a
     master!something*> ca -m "add stuff"
     master!something> thanks HEAD
 
+### PROMPT
+
+The default prompt shows the current branch, a bang (`!`), and then the relative
+path to the current working directory from the root of the work tree.  If the
+work tree includes modified files that have not yet been staged, a dirty status
+indicator (`*`) is also displayed.
+
+The git-sh prompt includes ANSI colors when the git `color.ui` option is set and
+enabled. To enable git-sh's prompt colors explicitly, set the `color.sh` config
+value to `auto`:
+
+    $ git config --global color.sh auto
+
+Customize prompt colors by setting the `color.sh.branch`, `color.sh.workdir`,
+and `color.sh.dirty` git config values:
+
+    $ git config --global color.sh.branch 'yellow reverse'
+    $ git config --global color.sh.workdir 'blue bold'
+    $ git config --global color.sh.dirty 'red'
+
+See [colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for information.
+
 ## COMPLETION
 
 Bash completion support is automatically enabled for all git built-in commands
@@ -65,20 +162,33 @@ script shipped with the core git distribution. The script is built into the
 `git-sh` executable at compile time and need not be obtained or installed
 separately.
 
-## FILES
+## CUSTOMIZING
+
+Most `git-sh` behavior can be configured by editing the user or system gitconfig
+files (`~/.gitconfig` and `/etc/gitconfig`) either by hand or using
+`git-config(1)`. The `[alias]` section is used to create basic command aliases.
 
 The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
-immediately before the shell becomes interactive. These files can be used to
-define custom git aliases--using the `gitalias` command--, to change the default
-`PS1` prompt, or to perform any other desired shell modifications.
+immediately before the shell becomes interactive.
 
-The `~/.bashrc` file is sourced into the shell before either `/etc/gitshrc` or
-`~/.gitshrc`. Any base bash customizations not explicitly overridden by `git-sh`
-should be available.
+The `~/.bashrc` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
+Any bash customizations defined there and not explicitly overridden by `git-sh`
+are also available.
 
-[1]: http://github.com/rtomayko/git-sh/blob/master/gitshrc-example.bash
-     "Ryan's ~/.gitshrc file"
+## ENVIRONMENT
+
+  * `PS1`:
+    Set to the dynamic git-sh prompt. This can be customized in the `~/.gitshrc`
+    or `/etc/gitshrc` files.
+
+  * `GIT_DIR`:
+    Explicitly set the path to the git repository instead of assuming the
+    nearest `.git` path.
+
+  * `GIT_WORK_TREE`:
+    Explicitly set the path to the root of the work tree instead of assuming
+    the nearest parent directory with a `.git` repository.
 
 ## SEE ALSO
 
-bash(1), git(1)
+bash(1), git(1), git-config(1)
