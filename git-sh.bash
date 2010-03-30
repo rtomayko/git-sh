@@ -160,17 +160,17 @@ done
 
 # Create aliases for everything defined in the gitconfig [alias] section.
 _git_import_aliases () {
-    eval "$(
-        git config --get-regexp 'alias\..*' |
-        sed 's/^alias\.//'                  |
-        while read key command
-        do
-            if expr -- "$command" : '!' >/dev/null
-            then echo "alias $key='${command#!}'"
-            else echo "gitalias $key='git $command'"
-            fi
-        done
-    )"
+	eval "$(
+		git config --get-regexp 'alias\..*' |
+		sed 's/^alias\.//'                  |
+		while read key command
+		do
+			if expr -- "$command" : '!' >/dev/null
+			then echo "alias $key='${command#!}'"
+			else echo "gitalias $key='git $command'"
+			fi
+		done
+	)"
 }
 
 # PROMPT =======================================================================
@@ -257,4 +257,4 @@ help() {
 }
 complete -o default -o nospace -F _git help
 
-# vim: tw=80
+# vim: tw=80 noexpandtab
