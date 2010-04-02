@@ -1,1 +1,254 @@
-git-sh.1.html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.4.1'>
+  <title>git-sh(1) -- a git shell</title>
+  <style type='text/css'>
+    body {margin:0}
+    #man, #man code, #man pre, #man tt, #man kbd, #man samp {
+      font-family:consolas,monospace;
+      font-size:16px;
+      line-height:1.3;
+      color:#343331;
+      background:#fff; }
+    #man { max-width:89ex; text-align:justify; margin:0 25px 25px 25px }
+    #man h1, #man h2, #man h3 { color:#232221;clear:left }
+    #man h1 { font-size:28px; margin:15px 0 30px 0; text-align:center }
+    #man h2 { font-size:18px; margin-bottom:0; margin-top:10px; line-height:1.3; }
+    #man h3 { font-size:16px; margin:0 0 0 4ex; }
+    #man p, #man ul, #man ol, #man dl, #man pre { margin:0 0 18px 0; }
+    #man pre {
+      color:#333231;
+      background:#edeceb;
+      padding:5px 7px;
+      margin:0px 0 20px 0;
+      border-left:2ex solid #ddd}
+    #man pre + h2, #man pre + h3 {
+      margin-top:22px;
+    }
+    #man h2 + pre, #man h3 + pre {
+      margin-top:5px;
+    }
+    #man > p, #man > ul, #man > ol, #man > dl, #man > pre { margin-left:8ex; }
+    #man dt { margin:0; clear:left }
+    #man dt.flush { float:left; width:8ex }
+    #man dd { margin:0 0 0 9ex }
+    #man code, #man strong, #man b { font-weight:bold; color:#131211; }
+    #man pre code { font-weight:normal; color:#232221; background:inherit }
+    #man em, var, u {
+      font-style:normal; color:#333231; border-bottom:1px solid #999; }
+    #man h1.man-title { display:none; }
+    #man ol.man, #man ol.man li { margin:2px 0 10px 0; padding:0;
+      float:left; width:33%; list-style-type:none;
+      text-transform:uppercase; font-size:18px; color:#999;
+      letter-spacing:1px;}
+    #man ol.man { width:100%; }
+    #man ol.man li.tl { text-align:left }
+    #man ol.man li.tc { text-align:center;letter-spacing:4px }
+    #man ol.man li.tr { text-align:right }
+    #man ol.man a { color:#999 }
+    #man ol.man a:hover { color:#333231 }
+  </style>
+</head>
+<body>
+<div id='man'>
+
+<h1 class='man-title'>git-sh(1)</h1>
+
+<ol class='head man'>
+  <li class='tl'>git-sh(1)</li>
+  <li class='tc'></li>
+  <li class='tr'>git-sh(1)</li>
+</ol>
+
+<h2 id='NAME'>NAME</h2>
+<p><code>git-sh</code> -- a git shell</p>
+
+<h2>SYNOPSIS</h2>
+
+<p><code>git-sh</code></p>
+
+<h2>DESCRIPTION</h2>
+
+<p><code>git-sh</code> starts an interactive <code>bash(1)</code> session modified for git-heavy
+workflows. Typical usage is to change into the directory of a git work tree or
+bare repository and run the <code>git-sh</code> command to start an interactive shell
+session.</p>
+
+<p>Top-level command aliases are created for all core <code>git(1)</code> subcommands, git-sh
+builtin aliases (see <em>BUILTIN ALIASES</em>), and git command aliases defined in
+<code>~/.gitconfig</code>.</p>
+
+<h2>BUILTIN ALIASES</h2>
+
+<p><strong>git-sh</strong> loads a set of standard aliases in addition to all core git commands.
+The builtin aliases are overridden by aliases defined in the user or system
+gitconfig files.</p>
+
+<dl>
+<dt class="flush"><code>a</code></dt><dd>git add</dd>
+<dt class="flush"><code>b</code></dt><dd>git branch</dd>
+<dt class="flush"><code>c</code></dt><dd>git checkout</dd>
+<dt class="flush"><code>d</code></dt><dd>git diff</dd>
+<dt class="flush"><code>f</code></dt><dd>git fetch --prune</dd>
+<dt class="flush"><code>k</code></dt><dd>git cherry-pick</dd>
+<dt class="flush"><code>l</code></dt><dd>git log --pretty=oneline --abbrev-commit</dd>
+<dt class="flush"><code>n</code></dt><dd>git commit --verbose --amend</dd>
+<dt class="flush"><code>r</code></dt><dd>git remote</dd>
+<dt class="flush"><code>s</code></dt><dd>git commit --dry-run --short</dd>
+<dt class="flush"><code>t</code></dt><dd>git diff --cached</dd>
+</dl>
+
+
+<h3>The Staging Area</h3>
+
+<dl>
+<dt class="flush"><code>a</code></dt><dd>git add</dd>
+<dt class="flush"><code>aa</code></dt><dd>git add --update (mnemonic: "add all")</dd>
+<dt class="flush"><code>stage</code></dt><dd>git add</dd>
+<dt class="flush"><code>ap</code></dt><dd>git add --patch</dd>
+<dt class="flush"><code>p</code></dt><dd>git diff --cached (mnemonic: "patch")</dd>
+<dt class="flush"><code>ps</code></dt><dd>git diff --cached --stat (mnemonic: "patch stat")</dd>
+<dt class="flush"><code>unstage</code></dt><dd>git reset HEAD</dd>
+</dl>
+
+
+<h3>Commits and Commit History</h3>
+
+<dl>
+<dt class="flush"><code>ci</code></dt><dd>git commit --verbose</dd>
+<dt class="flush"><code>ca</code></dt><dd>git commit --verbose --all</dd>
+<dt class="flush"><code>amend</code></dt><dd>git commit --verbose --amend</dd>
+<dt class="flush"><code>n</code></dt><dd>git commit --verbose --amend</dd>
+<dt class="flush"><code>k</code></dt><dd>git cherry-pick</dd>
+<dt class="flush"><code>re</code></dt><dd>git rebase --interactive</dd>
+<dt class="flush"><code>pop</code></dt><dd>git reset --soft HEAD^</dd>
+<dt class="flush"><code>peek</code></dt><dd>git log -p --max-count=1</dd>
+</dl>
+
+
+<h3>Fetching and Pulling</h3>
+
+<dl>
+<dt class="flush"><code>f</code></dt><dd>git fetch</dd>
+<dt class="flush"><code>pm</code></dt><dd>git pull (mnemonic: "pull merge")</dd>
+<dt class="flush"><code>pr</code></dt><dd>git pull --rebase (mnemonic: "pull rebase")</dd>
+</dl>
+
+
+<h3>Miscellaneous Commands</h3>
+
+<dl>
+<dt class="flush"><code>d</code></dt><dd>git diff</dd>
+<dt class="flush"><code>ds</code></dt><dd>git diff --stat (mnemonic: "diff stat")</dd>
+<dt class="flush"><code>hard</code></dt><dd>git reset --hard</dd>
+<dt class="flush"><code>soft</code></dt><dd>git reset --soft</dd>
+<dt class="flush"><code>scrap</code></dt><dd>git checkout HEAD</dd>
+</dl>
+
+
+<h2>CUSTOM ALIASES</h2>
+
+<p>Anything defined in the <code>[alias]</code> section of the repository, user, or system git
+config files are also available as top-level shell commands. Assuming a
+<code>~/.gitconfig</code> that looked like this:</p>
+
+<pre><code>[alias]
+  ci = commit --verbose
+  ca = commit -a
+  d  = diff
+  s  = status
+  thanks = !git-thanks
+</code></pre>
+
+<p>... you might then have the following shell session:</p>
+
+<pre><code>master!something&gt; echo "stuff" &gt;somefile
+master!something*&gt; s
+M  somefile
+master!something*&gt; d
+diff --git a/somefile b/somefile
+-- a/somefile
+++ b/somefile
+@@ -0,0 +1 @@
++ stuff
+master!something*&gt; ca -m "add stuff"
+master!something&gt; thanks HEAD
+</code></pre>
+
+<h3>PROMPT</h3>
+
+<p>The default prompt shows the current branch, a bang (<code>!</code>), and then the relative
+path to the current working directory from the root of the work tree.  If the
+work tree includes modified files that have not yet been staged, a dirty status
+indicator (<code>*</code>) is also displayed.</p>
+
+<p>The git-sh prompt includes ANSI colors when the git <code>color.ui</code> option is set and
+enabled. To enable git-sh's prompt colors explicitly, set the <code>color.sh</code> config
+value to <code>auto</code>:</p>
+
+<pre><code>$ git config --global color.sh auto
+</code></pre>
+
+<p>Customize prompt colors by setting the <code>color.sh.branch</code>, <code>color.sh.workdir</code>,
+and <code>color.sh.dirty</code> git config values:</p>
+
+<pre><code>$ git config --global color.sh.branch 'yellow reverse'
+$ git config --global color.sh.workdir 'blue bold'
+$ git config --global color.sh.dirty 'red'
+</code></pre>
+
+<p>See <a href="http://scie.nti.st/2007/5/2/colors-in-git">colors in git</a> for information.</p>
+
+<h2>COMPLETION</h2>
+
+<p>Bash completion support is automatically enabled for all git built-in commands
+and also for aliases defined in the user <code>~/.gitconfig</code> file. The auto-completion
+logic is smart enough to know an alias <code>d</code> that expands to <code>git-diff</code> should use
+the same completion configuration as the <code>git-diff</code> command.</p>
+
+<p>The completion code is a slightly modified version of the git bash completion
+script shipped with the core git distribution. The script is built into the
+<code>git-sh</code> executable at compile time and need not be obtained or installed
+separately.</p>
+
+<h2>CUSTOMIZING</h2>
+
+<p>Most <code>git-sh</code> behavior can be configured by editing the user or system gitconfig
+files (<code>~/.gitconfig</code> and <code>/etc/gitconfig</code>) either by hand or using
+<code>git-config(1)</code>. The <code>[alias]</code> section is used to create basic command aliases.</p>
+
+<p>The <code>/etc/gitshrc</code> and <code>~/.gitshrc</code> files are sourced (in that order)
+immediately before the shell becomes interactive.</p>
+
+<p>The <code>~/.bashrc</code> file is sourced before either <code>/etc/gitshrc</code> or <code>~/.gitshrc</code>.
+Any bash customizations defined there and not explicitly overridden by <code>git-sh</code>
+are also available.</p>
+
+<h2>ENVIRONMENT</h2>
+
+<dl>
+<dt class="flush"><code>PS1</code></dt><dd><p>Set to the dynamic git-sh prompt. This can be customized in the <code>~/.gitshrc</code>
+or <code>/etc/gitshrc</code> files.</p></dd>
+<dt class="flush"><code>GIT_DIR</code></dt><dd><p>Explicitly set the path to the git repository instead of assuming the
+nearest <code>.git</code> path.</p></dd>
+<dt><code>GIT_WORK_TREE</code></dt><dd><p>Explicitly set the path to the root of the work tree instead of assuming
+the nearest parent directory with a <code>.git</code> repository.</p></dd>
+</dl>
+
+
+<h2>SEE ALSO</h2>
+
+<p>bash(1), git(1), git-config(1)</p>
+
+
+<ol class='foot man'>
+  <li class='tl'>Ryan Tomayko</li>
+  <li class='tc'>March 2010</li>
+  <li class='tr'>git-sh(1)</li>
+</ol>
+
+</div>
+</body>
+</html>
