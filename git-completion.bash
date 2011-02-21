@@ -550,16 +550,9 @@ __git_complete_revlist ()
 
 __git_complete_remote_or_refspec ()
 {
-	local cmd="${COMP_WORDS[0]}"
+	local cmd="${COMP_WORDS[1]}"
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	local i c=1 remote="" pfx="" lhs=1 no_complete_refspec=0
-
-	# adjust args upward when completing git *
-	[ "$cmd" = "git" ] && {
-		cmd="${COMP_WORDS[1]}"
-		c=2
-	}
-
+	local i c=2 remote="" pfx="" lhs=1 no_complete_refspec=0
 	while [ $c -lt $COMP_CWORD ]; do
 		i="${COMP_WORDS[c]}"
 		case "$i" in
@@ -656,17 +649,18 @@ __git_list_all_commands ()
 		esac
 	done
 }
-__git_all_commandlist=
-__git_all_commandlist="$(__git_all_commands 2>/dev/null)"
 
-__git_porcelain_commands ()
+__git_all_commands=
+__git_compute_all_commands ()
 {
-	if [ -n "${__git_porcelain_commandlist-}" ]; then
-		echo "$__git_porcelain_commandlist"
-		return
-	fi
+	: ${__git_all_commands:=$(__git_list_all_commands)}
+}
+
+__git_list_porcelain_commands ()
+{
 	local i IFS=" "$'\n'
-	for i in "help" $(__git_all_commands)
+	__git_compute_all_commands
+	for i in "help" $__git_all_commands
 	do
 		case $i in
 		*--*)             : helper pattern;;
@@ -775,10 +769,19 @@ __git_aliased_command ()
 	local word cmdline=$(git --git-dir="$(__gitdir)" \
 		config --get "alias.$1")
 	for word in $cmdline; do
-		if [ "${word##-*}" ]; then
-			echo $word
+		case "$word" in
+		\!gitk|gitk)
+			echo "gitk"
 			return
-		fi
+			;;
+		\!*)	: shell command alias ;;
+		-*)	: option ;;
+		*=*)	: setting env ;;
+		git)	: git itself ;;
+		*)
+			echo "$word"
+			return
+		esac
 	done
 }
 
@@ -951,7 +954,7 @@ _git_branch ()
 
 _git_bundle ()
 {
-	local cmd="${COMP_WORDS[1]}"
+	local cmd="${COMP_WORDS[2]}"
 	case "$COMP_CWORD" in
 	2)
 		__gitcomp "create list-heads verify unbundle"
