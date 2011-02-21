@@ -550,9 +550,17 @@ __git_complete_revlist ()
 
 __git_complete_remote_or_refspec ()
 {
-	local cmd="${COMP_WORDS[1]}"
+	local cmd="${COMP_WORDS[0]}"
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	local i c=2 remote="" pfx="" lhs=1 no_complete_refspec=0
+	local i c=1 remote="" pfx="" lhs=1 no_complete_refspec=0
+
+	# git-sh hack: adjust args upward when completing git *
+	if [ "$cmd" = "git" ]
+	then
+		cmd="${COMP_WORDS[1]}"
+		c=2
+	fi
+
 	while [ $c -lt $COMP_CWORD ]; do
 		i="${COMP_WORDS[c]}"
 		case "$i" in
