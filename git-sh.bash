@@ -102,6 +102,7 @@ _git_cmd_cfg=(
 	'fsck           alias'
 	'gc             alias  stdcmpl'
 	'gui            alias'
+	'hash-object    alias'
 	'init           alias'
 	'instaweb       alias'
 	'log            alias  logcmpl'
