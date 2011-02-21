@@ -962,20 +962,17 @@ _git_branch ()
 
 _git_bundle ()
 {
-	local cmd="${COMP_WORDS[2]}"
-	case "$COMP_CWORD" in
-	2)
+	local cmd="${COMP_WORDS[1]}"
+
+	case "${COMP_WORDS[COMP_CWORD-1]}" in
+	bundle)
 		__gitcomp "create list-heads verify unbundle"
 		;;
-	3)
-		# looking for a file
+	create)
+		__git_complete_revlist
 		;;
-	*)
-		case "$cmd" in
-			create)
-				__git_complete_revlist
-			;;
-		esac
+	list-heads|verify|unbundle|*)
+		# looking for a file
 		;;
 	esac
 }
