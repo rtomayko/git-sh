@@ -168,8 +168,8 @@ _git_import_aliases () {
 		while read key command
 		do
 			if expr -- "$command" : '!' >/dev/null
-			then echo "alias $key='${command#!}'"
-			else echo "gitalias $key='git $command'"
+			then echo "alias $key='git $key'"
+			else echo "gitalias $key=\"git $command\""
 			fi
 		done
 	)"
