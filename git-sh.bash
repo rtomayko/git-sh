@@ -96,6 +96,7 @@ _git_cmd_cfg=(
 	'config         alias  stdcmpl'
 	'describe       alias  stdcmpl'
 	'diff           alias  stdcmpl'
+	'difftool       alias'
 	'fetch          alias  stdcmpl'
 	'format-patch   alias  stdcmpl'
 	'fsck           alias'
