@@ -177,7 +177,7 @@ _git_import_aliases () {
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname`!`_git_workdir``_git_dirty`> '
+PS1='`_git_headname`!`_git_repo_state``_git_workdir``_git_dirty`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
@@ -205,6 +205,19 @@ _git_workdir() {
 	subdir="${subdir%/}"
 	workdir="${PWD%/$subdir}"
 	_git_apply_color "${workdir/*\/}${subdir:+/$subdir}" "color.sh.workdir" "blue bold"
+}
+
+# detect if the repository is in a special state (rebase or merge)
+_git_repo_state() {
+	local git_dir="$(git rev-parse --show-cdup).git"
+	if test -d "$git_dir/rebase-merge"; then
+		local state_marker="(rebase)"
+	elif test -f "$git_dir/MERGE_HEAD"; then
+		local state_marker="(merge)"
+	else
+		return 0
+	fi
+	_git_apply_color "$state_marker" "color.sh.repo-state" "red"
 }
 
 # determine whether color should be enabled. this checks git's color.ui
