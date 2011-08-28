@@ -24,55 +24,42 @@ Installation
 
 Install the most recent available version under `/usr/local`:
 
-```bash
-$ git clone git://github.com/rtomayko/git-sh.git
-$ cd git-sh
-$ make
-$ sudo make install
-```
+    $ git clone git://github.com/rtomayko/git-sh.git
+    $ cd git-sh
+    $ make
+    $ sudo make install
 
 Start a shell with `git-sh`:
 
-```bash
-$ git-sh
-master!git-sh> help
-```
+    $ git-sh
+    master!git-sh> help
 
 Use the `PREFIX` environment variable to specify a different install location.
 For example, under `~/bin`:
 
-```bash
-$ make install PREFIX=~
-```
+    $ make install PREFIX=~
 
 Basic Usage
 -----------
 
 Typical usage is to change into a git working copy and then start the shell:
 
-```bash
-$ cd mygreatrepo
-$ git sh
-master!mygreatrepo> help
-```
+    $ cd mygreatrepo
+    $ git sh
+    master!mygreatrepo> help
 
 Core git commands and git command aliases defined in `~/.gitconfig` can be
 used as top-level commands:
 
-```bash
-master!mygreatrepo> checkout -b new
-new!mygreatrepo> log -p
-new!mygreatrepo> rebase -i HEAD~10
-```
+    master!mygreatrepo> checkout -b new
+    new!mygreatrepo> log -p
+    new!mygreatrepo> rebase -i HEAD~10
 
 It's really just a normal bash shell, though, so all commands on `PATH` and any
 aliases defined in `~/.bashrc` are also available:
 
-```bash
-new!mygreatrepo> ls -l
-new!mygreatrepo> vim somefile
-```
-
+    new!mygreatrepo> ls -l
+    new!mygreatrepo> vim somefile
 
 *IMPORTANT: `rm`, `mv`, and `diff` are aliased to their git counterparts.  To use system versions,
 run `command(1)` (e.g., `command rm`) or qualify the command (e.g. `/bin/rm`).*
@@ -89,18 +76,14 @@ The git-sh prompt includes ANSI colors when the git `color.ui` option is
 enabled. To enable git-sh's prompt colors explicitly, set the `color.sh` config
 value to `auto`:
 
-```bash
-$ git config --global color.sh auto
-```
+    $ git config --global color.sh auto
 
 Customize prompt colors by setting the `color.sh.branch`, `color.sh.workdir`,
 and `color.sh.dirty` git config values:
 
-```bash
-$ git config --global color.sh.branch 'yellow reverse'
-$ git config --global color.sh.workdir 'blue bold'
-$ git config --global color.sh.dirty 'red'
-```
+    $ git config --global color.sh.branch 'yellow reverse'
+    $ git config --global color.sh.workdir 'blue bold'
+    $ git config --global color.sh.dirty 'red'
 
 See [colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for information.
 
