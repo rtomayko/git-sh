@@ -177,7 +177,7 @@ _git_import_aliases () {
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname`!`_git_workdir``_git_dirty`> '
+PS1='`_git_headname`!`_git_workdir``_git_dirty``_git_dirty_stash`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
@@ -188,6 +188,15 @@ _git_dirty() {
 	fi
 	local dirty_marker="`git config gitsh.dirty || echo ' *'`"
 	_git_apply_color "$dirty_marker" "color.sh.dirty" "red"
+}
+
+# detect whether any changesets are stashed
+_git_dirty_stash() {
+	if ! git rev-parse --verify refs/stash >/dev/null 2>&1; then
+		return 0
+	fi
+	local dirty_stash_marker="`git config gitsh.dirty-stash || echo ' $'`"
+	_git_apply_color "$dirty_stash_marker" "color.sh.dirty-stash" "red"
 }
 
 # detect the current branch; use 7-sha when not on branch
