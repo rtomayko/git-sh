@@ -85,7 +85,7 @@ _git_cmd_cfg=(
 	'bisect         alias  stdcmpl'
 	'blame          alias'
 	'branch         alias  stdcmpl'
-	'bundle         alias  stdcmpl'
+	'bundle                stdcmpl'
 	'cat-file       alias'
 	'checkout       alias  stdcmpl'
 	'cherry         alias  stdcmpl'
