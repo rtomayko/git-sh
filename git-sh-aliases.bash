@@ -21,7 +21,6 @@ gitalias aa='git add --update'          # mnemonic: "add all"
 gitalias stage='git add'
 gitalias ap='git add --patch'
 gitalias p='git diff --cached'          # mnemonic: "patch"
-gitalias ps='git diff --cached --stat'  # mnemonic: "patch stat"
 gitalias unstage='git reset HEAD'
 
 # commits and history
