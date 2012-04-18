@@ -181,13 +181,19 @@ PS1='`_git_headname`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stas
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
-# detect whether the tree is in a dirty state. returns
+# detect whether the tree is in a dirty state.
 _git_dirty() {
-	if git status 2>/dev/null | fgrep -q '(working directory clean)'; then
+
+	local dirty_marker="`git config gitsh.dirty || echo ' *'`"
+
+	if ! git diff --quiet 2>/dev/null ; then
+		_git_apply_color "$dirty_marker" "color.sh.dirty" "red"
+	elif ! git diff --staged --quiet 2>/dev/null ; then
+		_git_apply_color "$dirty_marker" "color.sh.dirty-staged" "yellow"
+	else
 		return 0
 	fi
-	local dirty_marker="`git config gitsh.dirty || echo ' *'`"
-	_git_apply_color "$dirty_marker" "color.sh.dirty" "red"
+
 }
 
 # detect whether any changesets are stashed
