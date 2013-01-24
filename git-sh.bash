@@ -183,7 +183,7 @@ ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
 # detect whether the tree is in a dirty state. returns
 _git_dirty() {
-	if git status 2>/dev/null | fgrep -q '(working directory clean)'; then
+	if git status 2>/dev/null | fgrep -q 'working directory clean'; then
 		return 0
 	fi
 	local dirty_marker="`git config gitsh.dirty || echo ' *'`"
