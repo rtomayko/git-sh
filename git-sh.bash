@@ -223,7 +223,7 @@ _git_workdir() {
 # detect if the repository is in a special state (rebase or merge)
 _git_repo_state() {
 	local git_dir="$(git rev-parse --show-cdup).git"
-	if test -d "$git_dir/rebase-merge"; then
+	if test -d "$git_dir/rebase-merge" -o -d "$git_dir/rebase-apply"; then
 		local state_marker="(rebase)"
 	elif test -f "$git_dir/MERGE_HEAD"; then
 		local state_marker="(merge)"
