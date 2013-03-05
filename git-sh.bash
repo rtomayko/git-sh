@@ -223,6 +223,8 @@ _git_repo_state() {
 		local state_marker="(rebase)"
 	elif test -f "$git_dir/MERGE_HEAD"; then
 		local state_marker="(merge)"
+    elif test -f "$git_dir/CHERRY_PICK_HEAD"; then
+        local state_marker="(cherry-pick)"
 	else
 		return 0
 	fi
