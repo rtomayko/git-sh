@@ -84,6 +84,8 @@ and `color.sh.dirty` git config values:
     $ git config --global color.sh.branch 'yellow reverse'
     $ git config --global color.sh.workdir 'blue bold'
     $ git config --global color.sh.dirty 'red'
+    $ git config --global color.sh.dirty-stash 'red'
+    $ git config --global color.sh.repo-state 'red'
 
 See [colors in git](http://scie.nti.st/2007/5/2/colors-in-git) for information.
 
