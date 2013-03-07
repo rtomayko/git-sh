@@ -183,7 +183,7 @@ ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
 # detect whether the tree is in a dirty state.
 _git_dirty() {
-	local dirty_marker="`git config gitsh.dirty || echo ' *'`"
+	local dirty_marker="`git config gitsh.dirty 2>/dev/null || echo ' *'`"
 
 	if ! git diff --quiet 2>/dev/null ; then
 		_git_apply_color "$dirty_marker" "color.sh.dirty" "red"
@@ -199,7 +199,7 @@ _git_dirty_stash() {
 	if ! git rev-parse --verify refs/stash >/dev/null 2>&1; then
 		return 0
 	fi
-	local dirty_stash_marker="`git config gitsh.dirty-stash || echo ' $'`"
+	local dirty_stash_marker="`git config gitsh.dirty-stash 2>/dev/null || echo ' $'`"
 	_git_apply_color "$dirty_stash_marker" "color.sh.dirty-stash" "red"
 }
 
@@ -222,7 +222,7 @@ _git_workdir() {
 
 # detect if the repository is in a special state (rebase or merge)
 _git_repo_state() {
-	local git_dir="$(git rev-parse --show-cdup).git"
+	local git_dir="$(git rev-parse --show-cdup 2>/dev/null).git"
 	if test -d "$git_dir/rebase-merge" -o -d "$git_dir/rebase-apply"; then
 		local state_marker="(rebase)"
 	elif test -f "$git_dir/MERGE_HEAD"; then
