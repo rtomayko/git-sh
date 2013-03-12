@@ -55,3 +55,49 @@ which -s hub && {
     gitalias browse='hub browse'
     gitalias compare='hub compare'
 }
+
+# mv handler function
+# Smartly directs files to 'git mv' or system 'mv' command based on whether they are tracked or not
+function git_mv {
+	for f in "$@"; do
+		if [[ $(echo "$f" | head -c 1) = "-" ]] ; then
+			# Save command option arguments
+			args="$args $f"
+		else
+			# Process file arguments, but skip over last arg (move destination)
+			if [[ "$f" != "${@: -1}" ]] ; then
+				if [[ -z $(git ls-files "$f" --error-unmatch 2> /dev/null) ]] ; then
+					# Send untracked files to bash mv command
+					command mv $args "$f" "${@: -1}"
+				else
+					# Send tracked files to git mv command
+					git mv $args "$f" "${@: -1}"
+				fi
+			fi
+		fi
+	done
+	unset args
+}
+alias mv='git_mv'
+
+# rm handler function
+# Smartly directs files to 'git rm' or system 'rm' command based on whether they are tracked or not
+function git_rm {
+	for f in "$@"; do
+		if [[ $(echo "$f" | head -c 1) = "-" ]] ; then
+			# Save command option arguments
+			args="$args $f"
+		else
+			# Process file arguments
+			if [[ -z $(git ls-files "$f" --error-unmatch 2> /dev/null) ]] ; then
+				# Send untracked files to bash mv command
+				command rm $args "$f"
+			else
+				# Send tracked files to git mv command
+				git rm $args "$f"
+			fi
+		fi
+	done
+	unset args
+}
+alias rm='git_rm'
