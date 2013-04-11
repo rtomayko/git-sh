@@ -18,6 +18,7 @@ gitalias t='git diff --cached'
 # git add and the staging area
 gitalias a='git add'
 gitalias aa='git add --update'          # mnemonic: "add all"
+gitalias st='git status -s'
 gitalias stage='git add'
 gitalias ap='git add --patch'
 gitalias p='git diff --cached'          # mnemonic: "patch"
