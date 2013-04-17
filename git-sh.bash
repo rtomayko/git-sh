@@ -177,7 +177,7 @@ _git_import_aliases () {
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
+PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
@@ -213,6 +213,30 @@ _git_headname() {
 		br=${br#refs/heads/} ||
 		br=`git rev-parse --short HEAD 2>/dev/null`
 	_git_apply_color "$br" "color.sh.branch" "yellow reverse"
+}
+
+# detect the deviation from the upstream branch
+_git_upstream_state() {
+	local p=""
+
+	# Find how many commits we are ahead/behind our upstream
+	local count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2>/dev/null)"
+
+	# calculate the result
+	case "$count" in
+		"") # no upstream
+			p="" ;;
+		"0	0") # equal to upstream
+			p=" u=" ;;
+		"0	"*) # ahead of upstream
+			p=" u+${count#0	}" ;;
+		*"	0") # behind upstream
+			p=" u-${count%	0}" ;;
+		*) # diverged from upstream
+			p=" u+${count#*	}-${count%	*}" ;;
+	esac
+
+	_git_apply_color "$p" "color.sh.upstream-state" "yellow bold"
 }
 
 # detect working directory relative to working tree root
