@@ -16,7 +16,7 @@ interaction:
     work tree dirty indicator.
   * Customizable via `/etc/gitshrc` and `~/.gitshrc` config files;
     for creating aliases, changing the prompt, etc.
-  * Runs on top of normal bash (`~/.bashrc`) and
+  * Runs on top of normal bash (`~/.bashrc`, `~/.bash_profile`) and
     readline (`~/.inputrc`) configurations.
 
 Installation
@@ -56,7 +56,7 @@ used as top-level commands:
     new!mygreatrepo> rebase -i HEAD~10
 
 It's really just a normal bash shell, though, so all commands on `PATH` and any
-aliases defined in `~/.bashrc` are also available:
+aliases defined in `~/.bashrc` and/or `~/.bash_profile` are also available:
 
     new!mygreatrepo> ls -l
     new!mygreatrepo> vim somefile
@@ -99,9 +99,9 @@ files (`~/.gitconfig` and `/etc/gitconfig`) either by hand or using
 The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
 immediately before the shell becomes interactive.
 
-The `~/.bashrc` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
-Any bash customizations defined there and not explicitly overridden by `git-sh`
-are also available.
+The `~/.bashrc` and/or `~/.bash_profile` files are sourced before either
+`/etc/gitshrc` or `~/.gitshrc`.  Any bash customizations defined there and
+not explicitly overridden by `git-sh` are also available.
 
 Copying
 -------
