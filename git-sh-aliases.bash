@@ -46,3 +46,12 @@ gitalias ds='git diff --stat'    # mnemonic: "diff stat"
 gitalias hard='git reset --hard'
 gitalias soft='git reset --soft'
 gitalias scrap='git checkout HEAD'
+
+# hub pass-through aliases for new commands
+which -s hub && {
+    gitalias fork='hub fork'
+    gitalias pull-request='hub pull-request'
+    gitalias create='hub create'
+    gitalias browse='hub browse'
+    gitalias compare='hub compare'
+}
