@@ -40,6 +40,11 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 	popd > /dev/null
 }
 
+[ -r ~/.bash_profile ] && {
+	pushd ~ > /dev/null
+	. .bash_profile
+	popd > /dev/null
+}
 
 # ALIASES + COMPLETION =========================================================
 
