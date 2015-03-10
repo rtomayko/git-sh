@@ -100,6 +100,7 @@ _git_cmd_cfg=(
 	'fetch          alias  stdcmpl'
 	'format-patch   alias  stdcmpl'
 	'fsck           alias'
+        'flow           alias'
 	'gc             alias  stdcmpl'
 	'gui            alias'
 	'hash-object    alias'
