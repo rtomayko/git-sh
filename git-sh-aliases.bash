@@ -39,8 +39,10 @@ gitalias peek='git log -p --max-count=1'
 
 # git fetch
 gitalias f='git fetch'
-gitalias pm='git pull'          # mnemonic: pull merge
+gitalias pl='git pull'          # mnemonic: pull merge
 gitalias pr='git pull --rebase' # mnemonic: pull rebase
+gitalias ph='git push'          # mnemonic: pull merge
+
 
 # git diff
 gitalias d='git diff'
