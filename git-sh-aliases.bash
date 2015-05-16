@@ -3,7 +3,9 @@
 # git-sh sessions. Aliases defined in the gitconfig [alias] section override
 # these.
 
+
 gitalias a='git add'
+gitalias st='git status'
 gitalias b='git branch'
 gitalias c='git checkout'
 gitalias d='git diff'
@@ -14,6 +16,8 @@ gitalias n='git commit --verbose --amend'
 gitalias r='git remote'
 gitalias s='git commit --dry-run --short'
 gitalias t='git diff --cached'
+gitalias co='git commit'
+gitalias chpick='git cherry-pick'
 
 # git add and the staging area
 gitalias a='git add'
