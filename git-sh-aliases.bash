@@ -36,7 +36,7 @@ gitalias n='git commit --verbose --amend'
 gitalias k='git cherry-pick'
 gitalias re='git rebase --interactive'
 gitalias pop='git reset --soft HEAD^'
-gitalias peek='git log -p --max-count=1'
+gitalias peek='git log --patch --format=full --max-count=1'
 
 # git fetch
 gitalias f='git fetch'
