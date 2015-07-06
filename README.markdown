@@ -24,7 +24,7 @@ Installation
 
 Install the most recent available version under `/usr/local`:
 
-    $ git clone git://github.com/rtomayko/git-sh.git
+    $ git clone git://github.com/armano2/git-sh.git
     $ cd git-sh
     $ make
     $ sudo make install
