@@ -183,7 +183,7 @@ _git_import_aliases () {
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
+PS1='\[\e]0;git-sh:$(basename $PWD)\a\]`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
