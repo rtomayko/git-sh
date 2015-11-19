@@ -55,7 +55,7 @@ gitalias soft='git reset --soft'
 gitalias scrap='git checkout HEAD'
 
 # hub pass-through aliases for new commands
-which -s hub && {
+which hub > /dev/null 2> /dev/null && {
     gitalias fork='hub fork'
     gitalias pull-request='hub pull-request'
     gitalias create='hub create'
