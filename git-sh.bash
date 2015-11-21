@@ -75,8 +75,13 @@ gitalias() {
 	local alias="${1%%=*}" command="${1#*=}"
 	local prog="${command##git }"
 	prog="${prog%% *}"
-	alias $alias="$command"
+	alias $alias="_git_verbose_exec $command"
 	gitcomplete "$alias" "$prog"
+}
+
+_git_verbose_exec() {
+	echo ">" "$@" 1>&2
+	"$@"
 }
 
 # create aliases and configure bash completion for most porcelain commands
@@ -159,7 +164,7 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	read cmd opts <<< $cfg
 	for opt in $opts ; do
 		case $opt in
-			alias)   alias $cmd="git $cmd" ;;
+			alias)   gitalias "$cmd=git $cmd" ;;
 			stdcmpl) complete -o default -o nospace -F _git_${cmd//-/_} $cmd ;;
 			logcmpl) complete -o default -o nospace -F _git_log         $cmd ;;
 		esac
@@ -174,8 +179,8 @@ _git_import_aliases () {
 		while read key command
 		do
 			if expr -- "$command" : '!' >/dev/null
-			then echo "alias $key='git $key'"
-			else echo "gitalias $key=\"git $command\""
+			then echo "gitalias $key='git $key'"
+			else echo "gitalias $key='git $command'"
 			fi
 		done
 	)"
