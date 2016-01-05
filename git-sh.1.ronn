@@ -102,6 +102,8 @@ gitconfig files.
     git reset --soft
   * `scrap`:
     git checkout HEAD
+  * `wt`:
+    git worktree
 
 ## CUSTOM ALIASES
 

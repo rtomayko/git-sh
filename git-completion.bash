@@ -2340,6 +2340,55 @@ _git_whatchanged ()
 	_git_log
 }
 
+# https://git-scm.com/docs/git-worktree
+_git_worktree ()
+{
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local subcommands='add prune list'
+	local subcommand="${COMP_WORDS[1]}"
+
+	# determine if directory for 'add' subcommand is already set
+	local word c=2 dir=""
+	while [ $c -lt $COMP_CWORD ]; do
+		word="${COMP_WORDS[c]}"
+		if [[ ! "$word" =~ -.* || ! "$word" =~ --.* ]]; then
+			dir="$word"
+		fi
+		c=$((++c))
+	done
+
+	# first argument is always subcommand
+	if [ $COMP_CWORD -eq 1 ]; then
+		__gitcomp "add prune list"
+		return
+	else
+		case "$subcommand,$cur" in
+			prune,*)
+				__gitcomp "-n -v --expire"
+				;;
+			list,*)
+				__gitcomp "--porcelain"
+				;;
+			add,-b)
+				__gitcomp "$(__git_refs)"
+				;;
+			add,--*)
+				__gitcomp "--detach"
+				;;
+			add,-*)
+				__gitcomp "--detach -f -b"
+				;;
+			add,*)
+				if [ -z "$dir" ]; then
+					COMPREPLY=($(compgen -d $cur))
+				else
+					__gitcomp "$(__git_refs)"
+				fi
+				;;
+		esac
+	fi
+}
+
 _git ()
 {
 	local i c=1 command __git_dir

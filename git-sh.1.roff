@@ -1,28 +1,22 @@
-.\" generated with Ronn/v0.4.1
-.\" http://github.com/rtomayko/ronn/
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "GIT\-SH" "1" "March 2010" "Ryan Tomayko" ""
+.TH "GIT\-SH" "1" "January 2016" "" ""
 .
 .SH "NAME"
-\fBgit\-sh\fR \-\- a git shell
+\fBgit\-sh\fR \- a git shell
 .
 .SH "SYNOPSIS"
 \fBgit\-sh\fR
 .
 .SH "DESCRIPTION"
-\fBgit\-sh\fR starts an interactive \fBbash(1)\fR session modified for git\-heavy
-workflows. Typical usage is to change into the directory of a git work tree or
-bare repository and run the \fBgit\-sh\fR command to start an interactive shell
-session.
+\fBgit\-sh\fR starts an interactive \fBbash(1)\fR session modified for git\-heavy workflows\. Typical usage is to change into the directory of a git work tree or bare repository and run the \fBgit\-sh\fR command to start an interactive shell session\.
 .
 .P
-Top\-level command aliases are created for all core \fBgit(1)\fR subcommands, git\-sh
-builtin aliases (see \fIBUILTIN ALIASES\fR), and git command aliases defined in \fB~/.gitconfig\fR.
+Top\-level command aliases are created for all core \fBgit(1)\fR subcommands, git\-sh builtin aliases (see \fIBUILTIN ALIASES\fR), and git command aliases defined in \fB~/\.gitconfig\fR\.
 .
 .SH "BUILTIN ALIASES"
-\fBgit\-sh\fR loads a set of standard aliases in addition to all core git commands.
-The builtin aliases are overridden by aliases defined in the user or system
-gitconfig files.
+\fBgit\-sh\fR loads a set of standard aliases in addition to all core git commands\. The builtin aliases are overridden by aliases defined in the user or system gitconfig files\.
 .
 .TP
 \fBa\fR
@@ -168,13 +162,17 @@ git reset \-\-soft
 \fBscrap\fR
 git checkout HEAD
 .
+.TP
+\fBwt\fR
+git worktree
+.
 .SH "CUSTOM ALIASES"
-Anything defined in the \fB[alias]\fR section of the repository, user, or system git
-config files are also available as top\-level shell commands. Assuming a \fB~/.gitconfig\fR that looked like this:
+Anything defined in the \fB[alias]\fR section of the repository, user, or system git config files are also available as top\-level shell commands\. Assuming a \fB~/\.gitconfig\fR that looked like this:
 .
 .IP "" 4
 .
 .nf
+
 [alias]
   ci = commit \-\-verbose
   ca = commit \-a
@@ -187,11 +185,12 @@ config files are also available as top\-level shell commands. Assuming a \fB~/.g
 .IP "" 0
 .
 .P
-... you might then have the following shell session:
+\&\.\.\. you might then have the following shell session:
 .
 .IP "" 4
 .
 .nf
+
 master!something> echo "stuff" >somefile
 master!something*> s
 M  somefile
@@ -209,85 +208,69 @@ master!something> thanks HEAD
 .IP "" 0
 .
 .SS "PROMPT"
-The default prompt shows the current branch, a bang (\fB!\fR), and then the relative
-path to the current working directory from the root of the work tree.  If the
-work tree includes modified files that have not yet been staged, a dirty status
-indicator (\fB*\fR) is also displayed.
+The default prompt shows the current branch, a bang (\fB!\fR), and then the relative path to the current working directory from the root of the work tree\. If the work tree includes modified files that have not yet been staged, a dirty status indicator (\fB*\fR) is also displayed\.
 .
 .P
-The git\-sh prompt includes ANSI colors when the git \fBcolor.ui\fR option is set and
-enabled. To enable git\-sh's prompt colors explicitly, set the \fBcolor.sh\fR config
-value to \fBauto\fR:
+The git\-sh prompt includes ANSI colors when the git \fBcolor\.ui\fR option is set and enabled\. To enable git\-sh\'s prompt colors explicitly, set the \fBcolor\.sh\fR config value to \fBauto\fR:
 .
 .IP "" 4
 .
 .nf
-$ git config \-\-global color.sh auto
+
+$ git config \-\-global color\.sh auto
 .
 .fi
 .
 .IP "" 0
 .
 .P
-Customize prompt colors by setting the \fBcolor.sh.branch\fR, \fBcolor.sh.workdir\fR,
-and \fBcolor.sh.dirty\fR git config values:
+Customize prompt colors by setting the \fBcolor\.sh\.branch\fR, \fBcolor\.sh\.workdir\fR, and \fBcolor\.sh\.dirty\fR git config values:
 .
 .IP "" 4
 .
 .nf
-$ git config \-\-global color.sh.branch 'yellow reverse'
-$ git config \-\-global color.sh.workdir 'blue bold'
-$ git config \-\-global color.sh.dirty 'red'
-$ git config \-\-global color.sh.dirty-stash 'red'
-$ git config \-\-global color.sh.repo-state 'red'
+
+$ git config \-\-global color\.sh\.branch \'yellow reverse\'
+$ git config \-\-global color\.sh\.workdir \'blue bold\'
+$ git config \-\-global color\.sh\.dirty \'red\'
+$ git config \-\-global color\.sh\.dirty\-stash \'red\'
+$ git config \-\-global color\.sh\.repo\-state \'red\'
 .
 .fi
 .
 .IP "" 0
 .
 .P
-See \fIcolors in git\fR for information.
+See colors in git \fIhttp://scie\.nti\.st/2007/5/2/colors\-in\-git\fR for information\.
 .
 .SH "COMPLETION"
-Bash completion support is automatically enabled for all git built\-in commands
-and also for aliases defined in the user \fB~/.gitconfig\fR file. The auto\-completion
-logic is smart enough to know an alias \fBd\fR that expands to \fBgit\-diff\fR should use
-the same completion configuration as the \fBgit\-diff\fR command.
+Bash completion support is automatically enabled for all git built\-in commands and also for aliases defined in the user \fB~/\.gitconfig\fR file\. The auto\-completion logic is smart enough to know an alias \fBd\fR that expands to \fBgit\-diff\fR should use the same completion configuration as the \fBgit\-diff\fR command\.
 .
 .P
-The completion code is a slightly modified version of the git bash completion
-script shipped with the core git distribution. The script is built into the\fBgit\-sh\fR executable at compile time and need not be obtained or installed
-separately.
+The completion code is a slightly modified version of the git bash completion script shipped with the core git distribution\. The script is built into the \fBgit\-sh\fR executable at compile time and need not be obtained or installed separately\.
 .
 .SH "CUSTOMIZING"
-Most \fBgit\-sh\fR behavior can be configured by editing the user or system gitconfig
-files (\fB~/.gitconfig\fR and \fB/etc/gitconfig\fR) either by hand or using \fBgit\-config(1)\fR. The \fB[alias]\fR section is used to create basic command aliases.
+Most \fBgit\-sh\fR behavior can be configured by editing the user or system gitconfig files (\fB~/\.gitconfig\fR and \fB/etc/gitconfig\fR) either by hand or using \fBgit\-config(1)\fR\. The \fB[alias]\fR section is used to create basic command aliases\.
 .
 .P
-The \fB/etc/gitshrc\fR and \fB~/.gitshrc\fR files are sourced (in that order)
-immediately before the shell becomes interactive.
+The \fB/etc/gitshrc\fR and \fB~/\.gitshrc\fR files are sourced (in that order) immediately before the shell becomes interactive\.
 .
 .P
-The \fB~/.bashrc\fR file is sourced before either \fB/etc/gitshrc\fR or \fB~/.gitshrc\fR.
-Any bash customizations defined there and not explicitly overridden by \fBgit\-sh\fR
-are also available.
+The \fB~/\.bashrc\fR file is sourced before either \fB/etc/gitshrc\fR or \fB~/\.gitshrc\fR\. Any bash customizations defined there and not explicitly overridden by \fBgit\-sh\fR are also available\.
 .
 .SH "ENVIRONMENT"
 .
 .TP
 \fBPS1\fR
-Set to the dynamic git\-sh prompt. This can be customized in the \fB~/.gitshrc\fR
-or \fB/etc/gitshrc\fR files.
+Set to the dynamic git\-sh prompt\. This can be customized in the \fB~/\.gitshrc\fR or \fB/etc/gitshrc\fR files\.
 .
 .TP
 \fBGIT_DIR\fR
-Explicitly set the path to the git repository instead of assuming the
-nearest \fB.git\fR path.
+Explicitly set the path to the git repository instead of assuming the nearest \fB\.git\fR path\.
 .
 .TP
 \fBGIT_WORK_TREE\fR
-Explicitly set the path to the root of the work tree instead of assuming
-the nearest parent directory with a \fB.git\fR repository.
+Explicitly set the path to the root of the work tree instead of assuming the nearest parent directory with a \fB\.git\fR repository\.
 .
 .SH "SEE ALSO"
-bash(1), git(1), git\-config(1),\fIhttp://github.com/rtomayko/git\-sh\fR
+bash(1), git(1), git\-config(1), \fIhttp://github\.com/rtomayko/git\-sh\fR
