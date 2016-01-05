@@ -2344,24 +2344,23 @@ _git_whatchanged ()
 _git_worktree ()
 {
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	local subcommands='add prune list'
-	local subcommand="${COMP_WORDS[1]}"
 
-	# determine if directory for 'add' subcommand is already set
+	# Determine if directory for 'add' subcommand is already set
 	local word c=2 dir=""
 	while [ $c -lt $COMP_CWORD ]; do
 		word="${COMP_WORDS[c]}"
-		if [[ ! "$word" =~ -.* || ! "$word" =~ --.* ]]; then
+		if [[ ! "$word" =~ -.* ]]; then
 			dir="$word"
 		fi
 		c=$((++c))
 	done
 
-	# first argument is always subcommand
+	# First argument is always subcommand
 	if [ $COMP_CWORD -eq 1 ]; then
 		__gitcomp "add prune list"
 		return
 	else
+		local subcommand="${COMP_WORDS[1]}"
 		case "$subcommand,$cur" in
 			prune,*)
 				__gitcomp "-n -v --expire"
