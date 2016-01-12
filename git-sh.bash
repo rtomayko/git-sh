@@ -80,7 +80,9 @@ gitalias() {
 }
 
 _git_verbose_exec() {
-	echo ">" "$@" 1>&2
+	echo -n ">" 1>&2
+	printf " %q" "$@" 1>&2
+	echo 1>&2
 	"$@"
 }
 
