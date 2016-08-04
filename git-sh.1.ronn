@@ -175,7 +175,7 @@ files (`~/.gitconfig` and `/etc/gitconfig`) either by hand or using
 The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
 immediately before the shell becomes interactive.
 
-The `~/.bashrc` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
+The `~/.bash_profile` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
 Any bash customizations defined there and not explicitly overridden by `git-sh`
 are also available.
 
