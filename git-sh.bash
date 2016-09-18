@@ -40,6 +40,11 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 	popd > /dev/null
 }
 
+[ -r ~/.bash_profile ] && {
+	pushd ~ > /dev/null
+	. .bash_profile
+	popd > /dev/null
+}
 
 # ALIASES + COMPLETION =========================================================
 
@@ -70,8 +75,15 @@ gitalias() {
 	local alias="${1%%=*}" command="${1#*=}"
 	local prog="${command##git }"
 	prog="${prog%% *}"
-	alias $alias="$command"
+	alias $alias="_git_verbose_exec $command"
 	gitcomplete "$alias" "$prog"
+}
+
+_git_verbose_exec() {
+	echo -n ">" 1>&2
+	printf " %q" "$@" 1>&2
+	echo 1>&2
+	"$@"
 }
 
 # create aliases and configure bash completion for most porcelain commands
@@ -100,6 +112,7 @@ _git_cmd_cfg=(
 	'fetch          alias  stdcmpl'
 	'format-patch   alias  stdcmpl'
 	'fsck           alias'
+        'flow           alias'
 	'gc             alias  stdcmpl'
 	'gui            alias'
 	'hash-object    alias'
@@ -153,7 +166,7 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	read cmd opts <<< $cfg
 	for opt in $opts ; do
 		case $opt in
-			alias)   alias $cmd="git $cmd" ;;
+			alias)   gitalias "$cmd=git $cmd" ;;
 			stdcmpl) complete -o default -o nospace -F _git_${cmd//-/_} $cmd ;;
 			logcmpl) complete -o default -o nospace -F _git_log         $cmd ;;
 		esac
@@ -168,8 +181,8 @@ _git_import_aliases () {
 		while read key command
 		do
 			if expr -- "$command" : '!' >/dev/null
-			then echo "alias $key='git $key'"
-			else echo "gitalias $key=\"git $command\""
+			then echo "gitalias $key='git $key'"
+			else echo "gitalias $key='git $command'"
 			fi
 		done
 	)"
@@ -177,20 +190,20 @@ _git_import_aliases () {
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
+PS1='\[\e]0;git-sh:$(basename $PWD)\a\]`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
 # detect whether the tree is in a dirty state.
 _git_dirty() {
-	if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+	if ! command git rev-parse >/dev/null 2>&1; then
 		return 0
 	fi
-	local dirty_marker="`git config gitsh.dirty 2>/dev/null || echo ' *'`"
+	local dirty_marker="`command git config gitsh.dirty 2>/dev/null || echo ' *'`"
 
-	if ! git diff --quiet 2>/dev/null ; then
+	if ! command git diff --quiet 2>/dev/null ; then
 		_git_apply_color "$dirty_marker" "color.sh.dirty" "red"
-	elif ! git diff --staged --quiet 2>/dev/null ; then
+	elif ! command git diff --staged --quiet 2>/dev/null ; then
 		_git_apply_color "$dirty_marker" "color.sh.dirty-staged" "yellow"
 	else
 		return 0
@@ -199,19 +212,19 @@ _git_dirty() {
 
 # detect whether any changesets are stashed
 _git_dirty_stash() {
-	if ! git rev-parse --verify refs/stash >/dev/null 2>&1; then
+	if ! command git rev-parse --verify refs/stash >/dev/null 2>&1; then
 		return 0
 	fi
-	local dirty_stash_marker="`git config gitsh.dirty-stash 2>/dev/null || echo ' $'`"
+	local dirty_stash_marker="`command git config gitsh.dirty-stash 2>/dev/null || echo ' $'`"
 	_git_apply_color "$dirty_stash_marker" "color.sh.dirty-stash" "red"
 }
 
 # detect the current branch; use 7-sha when not on branch
 _git_headname() {
-	local br=`git symbolic-ref -q HEAD 2>/dev/null`
+	local br=`command git symbolic-ref -q HEAD 2>/dev/null`
 	[ -n "$br" ] &&
 		br=${br#refs/heads/} ||
-		br=`git rev-parse --short HEAD 2>/dev/null`
+		br=`command git rev-parse --short HEAD 2>/dev/null`
 	_git_apply_color "$br" "color.sh.branch" "yellow reverse"
 }
 
@@ -241,7 +254,7 @@ _git_upstream_state() {
 
 # detect working directory relative to working tree root
 _git_workdir() {
-	subdir=`git rev-parse --show-prefix 2>/dev/null`
+	subdir=`command git rev-parse --show-prefix 2>/dev/null`
 	subdir="${subdir%/}"
 	workdir="${PWD%/$subdir}"
 	_git_apply_color "${workdir/*\/}${subdir:+/$subdir}" "color.sh.workdir" "blue bold"
@@ -249,7 +262,7 @@ _git_workdir() {
 
 # detect if the repository is in a special state (rebase or merge)
 _git_repo_state() {
-	local git_dir="$(git rev-parse --show-cdup 2>/dev/null).git"
+	local git_dir="$(command git rev-parse --show-cdup 2>/dev/null).git"
 	if test -d "$git_dir/rebase-merge" -o -d "$git_dir/rebase-apply"; then
 		local state_marker="(rebase)"
 	elif test -f "$git_dir/MERGE_HEAD"; then
@@ -265,7 +278,7 @@ _git_repo_state() {
 # determine whether color should be enabled. this checks git's color.ui
 # option and then color.sh.
 _git_color_enabled() {
-	[ `git config --get-colorbool color.sh true` = "true" ]
+	[ `command git config --get-colorbool color.sh true` = "true" ]
 }
 
 # apply a color to the first argument
@@ -282,7 +295,7 @@ _git_apply_color() {
 # retrieve an ANSI color escape sequence from git config
 _git_color() {
 	local color
-	color=`git config --get-color "$1" "$2" 2>/dev/null`
+	color=`command git config --get-color "$1" "$2" 2>/dev/null`
 	[ -n "$color" ] && echo -ne "\001$color\002"
 }
 
