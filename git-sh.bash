@@ -163,10 +163,11 @@ done
 # Create aliases for everything defined in the gitconfig [alias] section.
 _git_import_aliases () {
 	eval "$(
-		git config --get-regexp 'alias\..*' |
-		sed 's/^alias\.//'                  |
-		while read key command
+		git config --list --name-only |
+		sed -n 's/^alias\.//p'        |
+		while read key
 		do
+			command=$(git config --get "alias.$key")
 			if expr -- "$command" : '!' >/dev/null
 			then echo "alias $key='git $key'"
 			else echo "gitalias $key=\"git $command\""
