@@ -170,7 +170,9 @@ _git_import_aliases () {
 			command=$(git config --get "alias.$key")
 			if expr -- "$command" : '!' >/dev/null
 			then echo "alias $key='git $key'"
-			else echo "gitalias $key=\"git $command\""
+			else echo "gitalias $key=\"git $(set -f; printf '%s ' $command)\""
+			  # Newlines in aliases that are not shell commands will be
+			  # considered whitespace (as git itself would do).
 			fi
 		done
 	)"
