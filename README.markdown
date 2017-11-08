@@ -19,6 +19,11 @@ interaction:
   * Runs on top of normal bash (`~/.bashrc`) and
     readline (`~/.inputrc`) configurations.
 
+Status
+------
+
+*This repository is no longer actively maintained by @rtomayko as of 2017-11-08. Issues and PRs documenting current issues have been intentionally left open for informational purposes.*
+
 Installation
 ------------
 
