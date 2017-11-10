@@ -912,7 +912,7 @@ _git_bisect ()
 {
 	__git_has_doubledash && return
 
-	local subcommands="start bad good skip reset visualize replay log run"
+	local subcommands="start bad old good new skip reset visualize replay log run"
 	local subcommand="$(__git_find_on_cmdline "$subcommands")"
 	if [ -z "$subcommand" ]; then
 		__gitcomp "$subcommands"
@@ -920,7 +920,7 @@ _git_bisect ()
 	fi
 
 	case "$subcommand" in
-	bad|good|reset|skip)
+	bad|old|good|new|reset|skip)
 		__gitcomp "$(__git_refs)"
 		;;
 	*)
@@ -2338,6 +2338,54 @@ _git_tag ()
 _git_whatchanged ()
 {
 	_git_log
+}
+
+# https://git-scm.com/docs/git-worktree
+_git_worktree ()
+{
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+
+	# Determine if directory for 'add' subcommand is already set
+	local word c=2 dir=""
+	while [ $c -lt $COMP_CWORD ]; do
+		word="${COMP_WORDS[c]}"
+		if [[ ! "$word" =~ -.* ]]; then
+			dir="$word"
+		fi
+		c=$((++c))
+	done
+
+	# First argument is always subcommand
+	if [ $COMP_CWORD -eq 1 ]; then
+		__gitcomp "add prune list"
+		return
+	else
+		local subcommand="${COMP_WORDS[1]}"
+		case "$subcommand,$cur" in
+			prune,*)
+				__gitcomp "-n -v --expire"
+				;;
+			list,*)
+				__gitcomp "--porcelain"
+				;;
+			add,-b)
+				__gitcomp "$(__git_refs)"
+				;;
+			add,--*)
+				__gitcomp "--detach"
+				;;
+			add,-*)
+				__gitcomp "--detach -f -b"
+				;;
+			add,*)
+				if [ -z "$dir" ]; then
+					COMPREPLY=($(compgen -d $cur))
+				else
+					__gitcomp "$(__git_refs)"
+				fi
+				;;
+		esac
+	fi
 }
 
 _git ()

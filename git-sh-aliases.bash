@@ -46,3 +46,7 @@ gitalias ds='git diff --stat'    # mnemonic: "diff stat"
 gitalias hard='git reset --hard'
 gitalias soft='git reset --soft'
 gitalias scrap='git checkout HEAD'
+
+# git worktree
+gitalias wt='git worktree'
+
