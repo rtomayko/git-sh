@@ -18,7 +18,7 @@
 # To use these routines:
 #
 #    1) Copy this file to somewhere (e.g. ~/.git-completion.sh).
-#    2) Added the following line to your .bashrc:
+#    2) Added the following line to your .bash_profile:
 #        source ~/.git-completion.sh
 #
 #    3) Consider changing your PS1 to also show the current branch:

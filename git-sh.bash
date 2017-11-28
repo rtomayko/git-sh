@@ -33,10 +33,10 @@
 [ "$0" = 'bash' ] ||
 exec /usr/bin/env bash --rcfile "$0" "$@"
 
-# source the user's .bashrc file
-[ -r ~/.bashrc ] && {
+# source the user's .bash_profile file
+[ -r ~/.bash_profile ] && {
 	pushd ~ > /dev/null
-	. .bashrc
+	. .bash_profile
 	popd > /dev/null
 }
 
@@ -98,6 +98,7 @@ _git_cmd_cfg=(
 	'diff           alias  stdcmpl'
 	'difftool       alias'
 	'fetch          alias  stdcmpl'
+	'flow			alias'
 	'format-patch   alias  stdcmpl'
 	'fsck           alias'
 	'gc             alias  stdcmpl'
