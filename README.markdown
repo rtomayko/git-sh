@@ -50,7 +50,7 @@ Basic Usage
 Typical usage is to change into a git working copy and then start the shell:
 
     $ cd mygreatrepo
-    $ git sh
+    $ git-sh
     master!mygreatrepo> help
 
 Core git commands and git command aliases defined in `~/.gitconfig` can be
