@@ -217,6 +217,9 @@ _git_headname() {
 
 # detect the deviation from the upstream branch
 _git_upstream_state() {
+	# TODO: This function is broken, it returns u+0 when equal to upstream
+	return
+
 	local p=""
 
 	# Find how many commits we are ahead/behind our upstream
