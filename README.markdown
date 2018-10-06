@@ -100,13 +100,29 @@ Customizing
 Most `git-sh` behavior can be configured by editing the user or system gitconfig
 files (`~/.gitconfig` and `/etc/gitconfig`) either by hand or using
 `git-config(1)`. The `[alias]` section is used to create basic command aliases.
-
 The `/etc/gitshrc` and `~/.gitshrc` files are sourced (in that order)
 immediately before the shell becomes interactive.
 
 The `~/.bashrc` file is sourced before either `/etc/gitshrc` or `~/.gitshrc`.
 Any bash customizations defined there and not explicitly overridden by `git-sh`
 are also available.
+
+Installing git-flow (optional)
+------------
+Git-sh supports git-flow plugin, to install gitflow you can use the next url https://github.com/nvie/gitflow/wiki/Installation
+
+You can also install it manually using the next steps.
+
+    $ git clone --recursive git://github.com/nvie/gitflow.git
+    $ cd gitflow
+    $ sudo make install
+
+Then start a shell with `git-sh` and you will have access to flow plugin:
+
+    $ git-sh
+    master!git-sh> flow feature start NEWFEAUTURE
+
+For more information visit https://github.com/nvie/gitflow
 
 Copying
 -------

@@ -40,6 +40,11 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 	popd > /dev/null
 }
 
+[ -r ~/.bash_profile ] && {
+	pushd ~ > /dev/null
+	. .bash_profile
+	popd > /dev/null
+}
 
 # ALIASES + COMPLETION =========================================================
 
@@ -100,6 +105,7 @@ _git_cmd_cfg=(
 	'fetch          alias  stdcmpl'
 	'format-patch   alias  stdcmpl'
 	'fsck           alias'
+        'flow           alias'
 	'gc             alias  stdcmpl'
 	'gui            alias'
 	'hash-object    alias'
