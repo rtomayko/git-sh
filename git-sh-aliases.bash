@@ -44,5 +44,6 @@ gitalias ds='git diff --stat'    # mnemonic: "diff stat"
 
 # git reset
 gitalias hard='git reset --hard'
+gitalias mixed='git reset --mixed'
 gitalias soft='git reset --soft'
 gitalias scrap='git checkout HEAD'
