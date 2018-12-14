@@ -182,7 +182,7 @@ case $(uname) in
     # Some git commands are REALLY SLOW on Windows, so use a stripped-down PS1
     # PS1='`_git_headname`!`_git_repo_state``_git_workdir``_git_dirty`> '
     # Even more stripped...
-    PS1='`_git_headname`!`_git_workdir`> '
+    # PS1='`_git_headname`!`_git_workdir`> '
     ;;
   *)
     PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
