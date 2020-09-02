@@ -154,8 +154,8 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	for opt in $opts ; do
 		case $opt in
 			alias)   alias $cmd="git $cmd" ;;
-			stdcmpl) complete -o default -o nospace -F _git_${cmd//-/_} $cmd ;;
-			logcmpl) complete -o default -o nospace -F _git_log         $cmd ;;
+			stdcmpl) __git_complete $cmd _git_${cmd//-/_} $cmd ;;
+			logcmpl) __git_complete $cmd _git_log ;;
 		esac
 	done
 done
