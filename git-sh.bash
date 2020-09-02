@@ -53,7 +53,7 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 #   gitcomplete c  checkout
 gitcomplete() {
 	local alias="$1" command="$2"
-	complete -o default -o nospace -F _git_${command//-/_} $alias
+	__git_complete $alias _git_${command//-/_}
 }
 
 # gitalias <alias>='<command> [<args>...]'
