@@ -53,7 +53,7 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 #   gitcomplete c  checkout
 gitcomplete() {
 	local alias="$1" command="$2"
-	complete -o default -o nospace -F _git_${command//-/_} $alias
+	__git_complete $alias _git_${command//-/_}
 }
 
 # gitalias <alias>='<command> [<args>...]'
@@ -154,8 +154,8 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	for opt in $opts ; do
 		case $opt in
 			alias)   alias $cmd="git $cmd" ;;
-			stdcmpl) complete -o default -o nospace -F _git_${cmd//-/_} $cmd ;;
-			logcmpl) complete -o default -o nospace -F _git_log         $cmd ;;
+			stdcmpl) __git_complete $cmd _git_${cmd//-/_} $cmd ;;
+			logcmpl) __git_complete $cmd _git_log ;;
 		esac
 	done
 done
@@ -177,7 +177,17 @@ _git_import_aliases () {
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
+case $(uname) in
+  MINGW*)
+    # Some git commands are REALLY SLOW on Windows, so use a stripped-down PS1
+    # PS1='`_git_headname`!`_git_repo_state``_git_workdir``_git_dirty`> '
+    # Even more stripped...
+    # PS1='`_git_headname`!`_git_workdir`> '
+    ;;
+  *)
+    PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
+    ;;
+esac
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
@@ -217,6 +227,9 @@ _git_headname() {
 
 # detect the deviation from the upstream branch
 _git_upstream_state() {
+	# TODO: This function is broken, it returns u+0 when equal to upstream
+	return
+
 	local p=""
 
 	# Find how many commits we are ahead/behind our upstream
