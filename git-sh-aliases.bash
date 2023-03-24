@@ -5,7 +5,7 @@
 
 gitalias a='git add'
 gitalias b='git branch'
-gitalias c='git checkout'
+gitalias c='git checkout --ignore-other-worktrees'
 gitalias d='git diff'
 gitalias f='git fetch --prune'
 gitalias k='git cherry-pick'
