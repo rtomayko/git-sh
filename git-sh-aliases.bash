@@ -5,7 +5,7 @@
 
 gitalias a='git add'
 gitalias b='git branch'
-gitalias c='git checkout'
+gitalias c='git checkout --ignore-other-worktrees'
 gitalias d='git diff'
 gitalias f='git fetch --prune'
 gitalias k='git cherry-pick'
@@ -31,7 +31,7 @@ gitalias n='git commit --verbose --amend'
 gitalias k='git cherry-pick'
 gitalias re='git rebase --interactive'
 gitalias pop='git reset --soft HEAD^'
-gitalias peek='git log -p --max-count=1'
+gitalias peek='git log --patch --format=full --max-count=1'
 
 # git fetch
 gitalias f='git fetch'
@@ -46,3 +46,6 @@ gitalias ds='git diff --stat'    # mnemonic: "diff stat"
 gitalias hard='git reset --hard'
 gitalias soft='git reset --soft'
 gitalias scrap='git checkout HEAD'
+
+# git worktree
+gitalias work='git worktree'

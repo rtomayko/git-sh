@@ -20,27 +20,6 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # Distributed under the GNU General Public License, version 2.0.
 
-# use to install the sh alias
-[[ $1 = '--configure' && $# = 1 ]] && {
-	set -e
-	git config --global alias.sh '!git-sh'
-	echo "alias 'sh' added to ~/.gitconfig"
-	exit 0
-}
-
-# we expect to be sourced into an interactive shell. when executed as a
-# command, kick off a new shell and source us.
-[ "$0" = 'bash' ] ||
-exec /usr/bin/env bash --rcfile "$0" "$@"
-
-# source the user's .bashrc file
-[ -r ~/.bashrc ] && {
-	pushd ~ > /dev/null
-	. .bashrc
-	popd > /dev/null
-}
-
-
 # ALIASES + COMPLETION =========================================================
 
 # gitcomp <alias> <command>
@@ -53,7 +32,7 @@ exec /usr/bin/env bash --rcfile "$0" "$@"
 #   gitcomplete c  checkout
 gitcomplete() {
 	local alias="$1" command="$2"
-	complete -o default -o nospace -F _git_${command//-/_} $alias
+	__git_complete $alias _git_${command//-/_}
 }
 
 # gitalias <alias>='<command> [<args>...]'
@@ -154,8 +133,8 @@ for cfg in "${_git_cmd_cfg[@]}" ; do
 	for opt in $opts ; do
 		case $opt in
 			alias)   alias $cmd="git $cmd" ;;
-			stdcmpl) complete -o default -o nospace -F _git_${cmd//-/_} $cmd ;;
-			logcmpl) complete -o default -o nospace -F _git_log         $cmd ;;
+			stdcmpl) __git_complete $cmd _git_${cmd//-/_} $cmd ;;
+			logcmpl) __git_complete $cmd _git_log ;;
 		esac
 	done
 done
@@ -174,10 +153,6 @@ _git_import_aliases () {
 		done
 	)"
 }
-
-# PROMPT =======================================================================
-
-PS1='`_git_headname``_git_upstream_state`!`_git_repo_state``_git_workdir``_git_dirty``_git_dirty_stash`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
@@ -217,6 +192,9 @@ _git_headname() {
 
 # detect the deviation from the upstream branch
 _git_upstream_state() {
+	# TODO: This function is broken, it returns u+0 when equal to upstream
+	return
+
 	local p=""
 
 	# Find how many commits we are ahead/behind our upstream
